@@ -43,6 +43,40 @@ const Index = () => {
   const todayTasks = tasks.filter(task => task.date === selectedDateString);
   const completedTasks = todayTasks.filter(task => task.completed);
 
+  // Get task status for a specific date
+  const getDateTaskStatus = (date: Date) => {
+    const dateString = format(date, 'yyyy-MM-dd');
+    const dateTasks = tasks.filter(task => task.date === dateString);
+    const completedDateTasks = dateTasks.filter(task => task.completed);
+    
+    if (dateTasks.length === 0) return 'none';
+    if (completedDateTasks.length === dateTasks.length) return 'completed';
+    if (completedDateTasks.length > 0) return 'partial';
+    return 'pending';
+  };
+
+  // Custom day component with status indicators
+  const DayContent = ({ date, ...props }: { date: Date }) => {
+    const status = getDateTaskStatus(date);
+    const dayNumber = date.getDate();
+    
+    return (
+      <div className="relative w-full h-full flex items-center justify-center">
+        <span className={props.className}>{dayNumber}</span>
+        {status !== 'none' && (
+          <div 
+            className={cn(
+              "absolute -bottom-1 left-1/2 transform -translate-x-1/2 w-1.5 h-1.5 rounded-full",
+              status === 'completed' && "bg-green-500",
+              status === 'partial' && "bg-yellow-500", 
+              status === 'pending' && "bg-red-400"
+            )}
+          />
+        )}
+      </div>
+    );
+  };
+
   const addTask = () => {
     if (newTaskText.trim()) {
       const newTask: Task = {
@@ -118,6 +152,22 @@ const Index = () => {
                 </Button>
               </PopoverTrigger>
               <PopoverContent className="w-auto p-0" align="end">
+                <div className="p-3 border-b bg-gray-50">
+                  <div className="flex items-center gap-4 text-xs text-gray-600">
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-green-500"></div>
+                      <span>All completed</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-yellow-500"></div>
+                      <span>In progress</span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 rounded-full bg-red-400"></div>
+                      <span>Pending</span>
+                    </div>
+                  </div>
+                </div>
                 <Calendar
                   mode="single"
                   selected={selectedDate}
@@ -129,6 +179,9 @@ const Index = () => {
                   }}
                   initialFocus
                   className="pointer-events-auto"
+                  components={{
+                    Day: ({ date, ...props }) => <DayContent date={date} {...props} />
+                  }}
                 />
               </PopoverContent>
             </Popover>
