@@ -11,7 +11,9 @@ import { useToast } from '@/hooks/use-toast';
 import { Header } from '@/components/Header';
 import { GoalCard } from '@/components/GoalCard';
 import { StatsCard } from '@/components/StatsCard';
+import { SoundButton } from '@/components/SoundButton';
 import { Task } from '@/types/task';
+import { useClickSound } from '@/utils/soundUtils';
 
 const Index = () => {
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -20,15 +22,16 @@ const Index = () => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isDarkMode, setIsDarkMode] = useState(true);
   const { toast } = useToast();
+  const { playClickSound } = useClickSound();
 
   // Load tasks and theme from localStorage on component mount
   useEffect(() => {
-    const savedTasks = localStorage.getItem('dailyGoalTasks');
+    const savedTasks = localStorage.getItem('aspiraTasks');
     if (savedTasks) {
       setTasks(JSON.parse(savedTasks));
     }
     
-    const savedTheme = localStorage.getItem('theme');
+    const savedTheme = localStorage.getItem('aspiraTheme');
     if (savedTheme) {
       setIsDarkMode(savedTheme === 'dark');
     }
@@ -36,12 +39,12 @@ const Index = () => {
 
   // Save tasks to localStorage whenever tasks change
   useEffect(() => {
-    localStorage.setItem('dailyGoalTasks', JSON.stringify(tasks));
+    localStorage.setItem('aspiraTasks', JSON.stringify(tasks));
   }, [tasks]);
 
   // Save theme to localStorage whenever theme changes
   useEffect(() => {
-    localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
+    localStorage.setItem('aspiraTheme', isDarkMode ? 'dark' : 'light');
   }, [isDarkMode]);
 
   const selectedDateString = format(selectedDate, 'yyyy-MM-dd');
@@ -82,24 +85,26 @@ const Index = () => {
 
   const addTask = () => {
     if (newTaskText.trim()) {
+      playClickSound();
       const newTask: Task = {
         id: crypto.randomUUID(),
         text: newTaskText.trim(),
         completed: false,
         date: selectedDateString,
         createdAt: new Date().toISOString(),
-        priority: 'daily' // Default priority
+        priority: 'daily'
       };
       setTasks([...tasks, newTask]);
       setNewTaskText('');
       toast({
         title: "🏆 Elite Goal Added!",
-        description: "Your premium objective has been registered in the executive suite.",
+        description: "Your premium objective has been registered in ASPIRA.",
       });
     }
   };
 
   const toggleTask = (taskId: string) => {
+    playClickSound();
     setTasks(tasks.map(task => 
       task.id === taskId 
         ? { ...task, completed: !task.completed }
@@ -110,16 +115,17 @@ const Index = () => {
     if (task && !task.completed) {
       toast({
         title: "💎 Excellence Achieved!",
-        description: "Outstanding performance! You're operating at elite levels.",
+        description: "Outstanding performance! ASPIRA recognizes your elite level execution.",
       });
     }
   };
 
   const deleteTask = (taskId: string) => {
+    playClickSound();
     setTasks(tasks.filter(task => task.id !== taskId));
     toast({
       title: "Executive Adjustment",
-      description: "Objective has been refined in your premium portfolio.",
+      description: "Objective has been refined in your ASPIRA portfolio.",
     });
   };
 
@@ -130,6 +136,7 @@ const Index = () => {
   };
 
   const toggleTheme = () => {
+    playClickSound();
     setIsDarkMode(!isDarkMode);
   };
 
@@ -178,13 +185,13 @@ const Index = () => {
         <div className="flex justify-center mb-8">
           <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
             <PopoverTrigger asChild>
-              <Button 
+              <SoundButton 
                 variant="outline" 
                 className="gap-3 bg-gradient-to-r from-red-500/20 to-blue-500/20 border-red-400/30 text-white hover:from-red-500/30 hover:to-blue-500/30 backdrop-blur-sm shadow-xl transform hover:scale-105 transition-all duration-300 hover:shadow-red-500/20"
               >
                 <CalendarIcon className="h-5 w-5" />
                 {format(selectedDate, 'MMM dd, yyyy')}
-              </Button>
+              </SoundButton>
             </PopoverTrigger>
             <PopoverContent className="w-auto p-0 bg-black/90 border-red-500/30 backdrop-blur-xl shadow-2xl" align="center">
               <div className="p-4 border-b bg-gradient-to-r from-red-500/10 to-blue-500/10 border-red-500/20">
@@ -208,6 +215,7 @@ const Index = () => {
                 selected={selectedDate}
                 onSelect={(date) => {
                   if (date) {
+                    playClickSound();
                     setSelectedDate(date);
                     setIsCalendarOpen(false);
                   }
@@ -254,10 +262,10 @@ const Index = () => {
                   </h3>
                   <p className="text-gray-200 text-sm leading-relaxed font-medium">
                     {progressPercentage === 100 
-                      ? 'Outstanding achievement! You\'ve reached the pinnacle of executive performance today.' :
+                      ? 'Outstanding achievement! You\'ve reached the pinnacle of executive performance with ASPIRA.' :
                       progressPercentage >= 50
-                        ? 'Exceptional progress! You\'re operating at premium levels of productivity.' :
-                        'Elite minds start with premium objectives. Your success story begins now.'}
+                        ? 'Exceptional progress! You\'re operating at premium levels with ASPIRA\'s guidance.' :
+                        'Elite minds start with premium objectives. Your ASPIRA success story begins now.'}
                   </p>
                 </div>
               </CardContent>
@@ -267,12 +275,12 @@ const Index = () => {
             <Card className="shadow-2xl border-0 bg-black/40 backdrop-blur-xl border border-white/10 transform hover:scale-[1.02] transition-all duration-500">
               <CardHeader>
                 <CardTitle className="text-lg text-white font-bold flex items-center gap-2">
-                  💡 Executive Insight
+                  💡 ASPIRA Insight
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <p className="text-gray-300 text-sm leading-relaxed font-medium">
-                  Premium performance requires strategic decomposition. Break complex objectives into precise, executable actions. This methodology amplifies achievement rates while maintaining executive-level quality standards.
+                  Premium performance requires strategic decomposition. ASPIRA's methodology amplifies achievement rates while maintaining executive-level quality standards through precise, executable actions.
                 </p>
               </CardContent>
             </Card>

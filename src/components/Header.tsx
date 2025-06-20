@@ -21,7 +21,7 @@ export const Header = ({ isDarkMode, onToggleTheme }: HeaderProps) => {
             </div>
             <div>
               <h1 className="text-2xl font-bold bg-gradient-to-r from-red-400 via-red-500 to-blue-500 bg-clip-text text-transparent tracking-wide">
-                GOAL FLOW
+                ASPIRA
               </h1>
               <p className="text-xs text-gray-300 font-medium tracking-wider">
                 PREMIUM PRODUCTIVITY SUITE
