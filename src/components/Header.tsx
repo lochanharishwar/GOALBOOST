@@ -1,6 +1,6 @@
 
 import { Button } from '@/components/ui/button';
-import { Moon, Sun, User, Zap, Calendar } from 'lucide-react';
+import { Moon, Sun, User, Zap, Calendar, Menu, X } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
@@ -18,94 +18,71 @@ interface HeaderProps {
 
 export const Header = ({ isDarkMode, onToggleTheme, selectedDate, onDateSelect }: HeaderProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
 
   const isActive = (path: string) => location.pathname === path;
 
+  const navigationItems = [
+    { path: '/', label: 'Dashboard' },
+    { path: '/analytics', label: 'Analytics' },
+    { path: '/habits', label: 'Habits' },
+    { path: '/pomodoro', label: 'Focus Timer' },
+    { path: '/reminders', label: 'Reminders' },
+  ];
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setIsMobileMenuOpen(false);
+  };
+
   return (
     <header className="sticky top-0 z-50 bg-black/20 backdrop-blur-xl border-b border-blue-500/20 shadow-2xl">
-      <div className="max-w-6xl mx-auto px-6 py-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
-          {/* Brand Logo - Updated to GoalFlow */}
+          {/* Brand Logo */}
           <div className="flex items-center gap-3 transform hover:scale-105 transition-all duration-300">
             <div className="relative">
-              <Zap className="h-8 w-8 text-blue-400 animate-pulse" />
+              <Zap className="h-6 w-6 sm:h-8 sm:w-8 text-blue-400 animate-pulse" />
               <div className="absolute inset-0 bg-blue-400 blur-lg opacity-30 animate-pulse"></div>
             </div>
             <div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-400 via-blue-500 to-white bg-clip-text text-transparent tracking-wide font-inter">
+              <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-blue-400 via-blue-500 to-white bg-clip-text text-transparent tracking-wide font-inter">
                 GoalFlow
               </h1>
-              <p className="text-xs text-blue-200/80 font-medium tracking-wider font-inter">
+              <p className="text-xs text-blue-200/80 font-medium tracking-wider font-inter hidden sm:block">
                 Your Daily Productivity Companion
               </p>
             </div>
           </div>
 
-          {/* Navigation */}
+          {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center gap-6">
-            <SoundButton 
-              variant="ghost" 
-              className={cn(
-                "text-white hover:text-blue-400 transition-colors font-inter",
-                isActive('/') && "text-blue-400 bg-blue-500/20"
-              )}
-              onClick={() => navigate('/')}
-            >
-              Dashboard
-            </SoundButton>
-            <SoundButton 
-              variant="ghost" 
-              className={cn(
-                "text-white hover:text-blue-400 transition-colors font-inter",
-                isActive('/analytics') && "text-blue-400 bg-blue-500/20"
-              )}
-              onClick={() => navigate('/analytics')}
-            >
-              Analytics
-            </SoundButton>
-            <SoundButton 
-              variant="ghost" 
-              className={cn(
-                "text-white hover:text-blue-400 transition-colors font-inter",
-                isActive('/habits') && "text-blue-400 bg-blue-500/20"
-              )}
-              onClick={() => navigate('/habits')}
-            >
-              Habits
-            </SoundButton>
-            <SoundButton 
-              variant="ghost" 
-              className={cn(
-                "text-white hover:text-blue-400 transition-colors font-inter",
-                isActive('/pomodoro') && "text-blue-400 bg-blue-500/20"
-              )}
-              onClick={() => navigate('/pomodoro')}
-            >
-              Focus Timer
-            </SoundButton>
-            <SoundButton 
-              variant="ghost" 
-              className={cn(
-                "text-white hover:text-blue-400 transition-colors font-inter",
-                isActive('/reminders') && "text-blue-400 bg-blue-500/20"
-              )}
-              onClick={() => navigate('/reminders')}
-            >
-              Reminders
-            </SoundButton>
+            {navigationItems.map((item) => (
+              <SoundButton 
+                key={item.path}
+                variant="ghost" 
+                className={cn(
+                  "text-white hover:text-blue-400 transition-colors font-inter",
+                  isActive(item.path) && "text-blue-400 bg-blue-500/20"
+                )}
+                onClick={() => navigate(item.path)}
+              >
+                {item.label}
+              </SoundButton>
+            ))}
           </nav>
 
           {/* Actions */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Calendar Selector - Only show on dashboard */}
             {selectedDate && onDateSelect && (
               <Popover open={isCalendarOpen} onOpenChange={setIsCalendarOpen}>
                 <PopoverTrigger asChild>
                   <SoundButton 
                     variant="outline" 
-                    className="gap-2 bg-gradient-to-r from-blue-500/20 to-white/20 border-blue-400/30 text-white hover:from-blue-500/30 hover:to-white/30 backdrop-blur-sm shadow-xl font-inter"
+                    className="gap-2 bg-gradient-to-r from-blue-500/20 to-white/20 border-blue-400/30 text-white hover:from-blue-500/30 hover:to-white/30 backdrop-blur-sm shadow-xl font-inter text-xs sm:text-sm hidden sm:flex"
                   >
                     <Calendar className="h-4 w-4" />
                     {format(selectedDate, 'MMM dd')}
@@ -128,23 +105,76 @@ export const Header = ({ isDarkMode, onToggleTheme, selectedDate, onDateSelect }
               </Popover>
             )}
 
+            {/* Mobile Menu Button */}
             <SoundButton
               variant="outline"
               size="icon"
-              onClick={onToggleTheme}
-              className="bg-black/20 border-blue-400/30 text-white hover:bg-blue-500/20 transition-all duration-300"
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden bg-black/20 border-blue-400/30 text-white hover:bg-blue-500/20 transition-all duration-300"
             >
-              {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </SoundButton>
-            <SoundButton
-              variant="outline"
-              size="icon"
-              className="bg-black/20 border-blue-400/30 text-white hover:bg-blue-500/20 transition-all duration-300"
-            >
-              <User className="h-4 w-4" />
-            </SoundButton>
+
+            {/* Desktop Actions */}
+            <div className="hidden sm:flex items-center gap-3">
+              <SoundButton
+                variant="outline"
+                size="icon"
+                onClick={onToggleTheme}
+                className="bg-black/20 border-blue-400/30 text-white hover:bg-blue-500/20 transition-all duration-300"
+              >
+                {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+              </SoundButton>
+              <SoundButton
+                variant="outline"
+                size="icon"
+                className="bg-black/20 border-blue-400/30 text-white hover:bg-blue-500/20 transition-all duration-300"
+              >
+                <User className="h-4 w-4" />
+              </SoundButton>
+            </div>
           </div>
         </div>
+
+        {/* Mobile Navigation Menu */}
+        {isMobileMenuOpen && (
+          <div className="md:hidden mt-4 pb-4 border-t border-blue-500/20">
+            <nav className="flex flex-col gap-2 mt-4">
+              {navigationItems.map((item) => (
+                <SoundButton
+                  key={item.path}
+                  variant="ghost"
+                  className={cn(
+                    "justify-start text-white hover:text-blue-400 hover:bg-blue-500/20 transition-colors font-inter",
+                    isActive(item.path) && "text-blue-400 bg-blue-500/20"
+                  )}
+                  onClick={() => handleNavigation(item.path)}
+                >
+                  {item.label}
+                </SoundButton>
+              ))}
+              
+              {/* Mobile Actions */}
+              <div className="flex items-center gap-2 mt-4 pt-4 border-t border-blue-500/20">
+                <SoundButton
+                  variant="outline"
+                  size="icon"
+                  onClick={onToggleTheme}
+                  className="bg-black/20 border-blue-400/30 text-white hover:bg-blue-500/20 transition-all duration-300"
+                >
+                  {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+                </SoundButton>
+                <SoundButton
+                  variant="outline"
+                  size="icon"
+                  className="bg-black/20 border-blue-400/30 text-white hover:bg-blue-500/20 transition-all duration-300"
+                >
+                  <User className="h-4 w-4" />
+                </SoundButton>
+              </div>
+            </nav>
+          </div>
+        )}
       </div>
     </header>
   );
