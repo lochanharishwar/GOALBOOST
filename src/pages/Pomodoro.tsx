@@ -71,7 +71,7 @@ const Pomodoro = () => {
     playClickSound();
     setMode(newMode);
     setIsActive(false);
-    set TimeLeft(newMode === 'work' ? workTime * 60 : breakTime * 60);
+    setTimeLeft(newMode === 'work' ? workTime * 60 : breakTime * 60);
   };
 
   const toggleTheme = () => {
