@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from 'react';
 import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
@@ -6,7 +5,7 @@ import { Play, Pause, RotateCcw, Settings } from 'lucide-react';
 import { SoundButton } from '@/components/SoundButton';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { useClickSound } from '@/utils/soundUtils';
+import { useClickSound, playTickSound, playCompletionChime } from '@/utils/soundUtils';
 
 const Pomodoro = () => {
   const [timeLeft, setTimeLeft] = useState(25 * 60);
@@ -19,6 +18,7 @@ const Pomodoro = () => {
   const { toast } = useToast();
   const { playClickSound } = useClickSound();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
+  const tickIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
   // Initialize timer with work time
   useEffect(() => {
@@ -32,6 +32,15 @@ const Pomodoro = () => {
       }, 1000);
     } else if (timeLeft === 0) {
       setIsActive(false);
+      // Clear tick sound when timer ends
+      if (tickIntervalRef.current) {
+        clearInterval(tickIntervalRef.current);
+        tickIntervalRef.current = null;
+      }
+      
+      // Play completion chime
+      playCompletionChime();
+      
       if (mode === 'work') {
         toast({
           title: "🎉 Work Session Complete!",
@@ -56,6 +65,28 @@ const Pomodoro = () => {
     };
   }, [isActive, timeLeft, mode, workTime, breakTime, toast]);
 
+  // Handle tick sound when timer is active
+  useEffect(() => {
+    if (isActive && timeLeft > 0) {
+      // Start ticking sound every second
+      tickIntervalRef.current = setInterval(() => {
+        playTickSound();
+      }, 1000);
+    } else {
+      // Clear tick sound when paused or completed
+      if (tickIntervalRef.current) {
+        clearInterval(tickIntervalRef.current);
+        tickIntervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (tickIntervalRef.current) {
+        clearInterval(tickIntervalRef.current);
+      }
+    };
+  }, [isActive, timeLeft]);
+
   const toggleTimer = () => {
     playClickSound();
     setIsActive(!isActive);
@@ -65,6 +96,11 @@ const Pomodoro = () => {
     playClickSound();
     setIsActive(false);
     setTimeLeft(mode === 'work' ? workTime * 60 : breakTime * 60);
+    // Clear tick sound when resetting
+    if (tickIntervalRef.current) {
+      clearInterval(tickIntervalRef.current);
+      tickIntervalRef.current = null;
+    }
   };
 
   const switchMode = (newMode: 'work' | 'break') => {
@@ -72,6 +108,11 @@ const Pomodoro = () => {
     setMode(newMode);
     setIsActive(false);
     setTimeLeft(newMode === 'work' ? workTime * 60 : breakTime * 60);
+    // Clear tick sound when switching modes
+    if (tickIntervalRef.current) {
+      clearInterval(tickIntervalRef.current);
+      tickIntervalRef.current = null;
+    }
   };
 
   const toggleTheme = () => {
