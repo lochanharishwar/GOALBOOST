@@ -29,6 +29,7 @@ export const Header = ({ isDarkMode, onToggleTheme, selectedDate, onDateSelect }
     { path: '/analytics', label: 'Analytics' },
     { path: '/habits', label: 'Habits' },
     { path: '/pomodoro', label: 'Focus Timer' },
+    { path: '/exercises', label: 'Exercises' },
     { path: '/reminders', label: 'Reminders' },
   ];
 
