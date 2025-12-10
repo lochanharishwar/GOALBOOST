@@ -10,113 +10,11 @@ export type Database = {
   // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
-    PostgrestVersion: "13.0.4"
+    PostgrestVersion: "13.0.5"
   }
   public: {
     Tables: {
-      exercise_logs: {
-        Row: {
-          created_at: string
-          exercise_id: string
-          id: string
-          reps: number | null
-          sets: number | null
-          weight_kg: number | null
-          workout_id: string
-        }
-        Insert: {
-          created_at?: string
-          exercise_id: string
-          id?: string
-          reps?: number | null
-          sets?: number | null
-          weight_kg?: number | null
-          workout_id: string
-        }
-        Update: {
-          created_at?: string
-          exercise_id?: string
-          id?: string
-          reps?: number | null
-          sets?: number | null
-          weight_kg?: number | null
-          workout_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "exercise_logs_workout_id_fkey"
-            columns: ["workout_id"]
-            isOneToOne: false
-            referencedRelation: "workouts"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      profiles: {
-        Row: {
-          created_at: string
-          fitness_goal: string | null
-          fitness_level: string | null
-          id: string
-          updated_at: string
-          user_id: string
-          username: string | null
-        }
-        Insert: {
-          created_at?: string
-          fitness_goal?: string | null
-          fitness_level?: string | null
-          id?: string
-          updated_at?: string
-          user_id: string
-          username?: string | null
-        }
-        Update: {
-          created_at?: string
-          fitness_goal?: string | null
-          fitness_level?: string | null
-          id?: string
-          updated_at?: string
-          user_id?: string
-          username?: string | null
-        }
-        Relationships: []
-      }
-      workouts: {
-        Row: {
-          created_at: string
-          date: string
-          duration_minutes: number | null
-          id: string
-          notes: string | null
-          user_id: string
-        }
-        Insert: {
-          created_at?: string
-          date?: string
-          duration_minutes?: number | null
-          id?: string
-          notes?: string | null
-          user_id: string
-        }
-        Update: {
-          created_at?: string
-          date?: string
-          duration_minutes?: number | null
-          id?: string
-          notes?: string | null
-          user_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "workouts_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-        ]
-      }
+      [_ in never]: never
     }
     Views: {
       [_ in never]: never
