@@ -1,1 +1,4 @@
 project_id = "vnshckquumonswjumvsl"
+
+[functions.exercise-recommendations]
+verify_jwt = false

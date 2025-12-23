@@ -1,4 +1,3 @@
-
 import { useState, useMemo } from 'react';
 import { Header } from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ExerciseCard } from '@/components/ExerciseCard';
+import { AIExerciseRecommendations } from '@/components/AIExerciseRecommendations';
 import { exercises, exerciseCategories } from '@/data/exercises';
 import { Exercise } from '@/types/exercise';
 import { Search, Filter, Dumbbell } from 'lucide-react';
@@ -140,6 +140,11 @@ const Exercises = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* AI Recommendations Section */}
+        <div className="mb-8">
+          <AIExerciseRecommendations />
+        </div>
 
         {/* Results Count */}
         <div className="mb-6">
