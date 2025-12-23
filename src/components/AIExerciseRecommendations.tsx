@@ -2,28 +2,39 @@ import { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { Sparkles, Loader2, Dumbbell, Target, AlertCircle } from 'lucide-react';
+import { Sparkles, Loader2, Target, AlertCircle, Dumbbell, CheckCircle2, ArrowRight } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
+import { exercises } from '@/data/exercises';
 
 const fitnessLevels = ['beginner', 'intermediate', 'advanced'] as const;
-const goalOptions = ['Build Muscle', 'Lose Weight', 'Improve Flexibility', 'Increase Endurance', 'General Fitness'];
-const equipmentOptions = ['None/Bodyweight', 'Dumbbells', 'Barbell', 'Pull-up Bar', 'Bench', 'Cable Machine', 'Resistance Bands', 'Kettlebell'];
-const muscleGroups = ['Chest', 'Back', 'Shoulders', 'Arms', 'Core', 'Legs', 'Glutes', 'Full Body'];
+const goalOptions = ['Build', 'Lose', 'Flex', 'Endure'];
+const muscleGroups = ['Chest', 'Back', 'Arms', 'Legs'];
+
+interface ExercisePlan {
+  summary: string;
+  exercises: {
+    name: string;
+    category: string;
+    sets: number;
+    reps: string;
+    benefit: string;
+    matchId?: string;
+  }[];
+  focusAreas: { area: string; percentage: number }[];
+  tips: string[];
+}
 
 export const AIExerciseRecommendations = () => {
   const [isLoading, setIsLoading] = useState(false);
-  const [recommendations, setRecommendations] = useState<string | null>(null);
+  const [plan, setPlan] = useState<ExercisePlan | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [fitnessLevel, setFitnessLevel] = useState<string>('beginner');
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
-  const [selectedEquipment, setSelectedEquipment] = useState<string[]>([]);
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
-  const [additionalPreferences, setAdditionalPreferences] = useState('');
   const { toast } = useToast();
 
   const toggleSelection = (item: string, selected: string[], setSelected: (items: string[]) => void) => {
@@ -34,44 +45,37 @@ export const AIExerciseRecommendations = () => {
     }
   };
 
+  const getMatchedExercise = (matchId?: string) => {
+    if (!matchId) return null;
+    return exercises.find(e => e.id === matchId);
+  };
+
   const handleGetRecommendations = async () => {
     setIsLoading(true);
     setError(null);
-    setRecommendations(null);
+    setPlan(null);
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('exercise-recommendations', {
         body: {
           fitnessLevel,
           goals: selectedGoals.join(', ') || 'General fitness',
-          availableEquipment: selectedEquipment,
+          availableEquipment: [],
           targetMuscles: selectedMuscles,
-          preferences: additionalPreferences,
+          preferences: '',
         }
       });
 
-      if (fnError) {
-        throw fnError;
-      }
+      if (fnError) throw fnError;
+      if (data?.error) throw new Error(data.error);
 
-      if (data?.error) {
-        throw new Error(data.error);
-      }
-
-      setRecommendations(data.recommendations);
-      toast({
-        title: "Recommendations Ready!",
-        description: "Your personalized exercise plan has been generated.",
-      });
+      setPlan(data.plan);
+      toast({ title: "Plan Ready!", description: "Your workout plan has been generated." });
     } catch (err) {
       console.error('Error getting recommendations:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to get recommendations';
       setError(errorMessage);
-      toast({
-        title: "Error",
-        description: errorMessage,
-        variant: "destructive",
-      });
+      toast({ title: "Error", description: errorMessage, variant: "destructive" });
     } finally {
       setIsLoading(false);
     }
@@ -107,12 +111,12 @@ export const AIExerciseRecommendations = () => {
           </div>
         </div>
 
-        {/* Goals & Equipment Row */}
+        {/* Goals & Muscles Row */}
         <div className="grid grid-cols-2 gap-3">
           <div>
             <Label className="text-gray-300 text-xs mb-1.5 block">Goals</Label>
             <div className="flex flex-wrap gap-1">
-              {goalOptions.slice(0, 4).map((goal) => (
+              {goalOptions.map((goal) => (
                 <Badge
                   key={goal}
                   onClick={() => toggleSelection(goal, selectedGoals, setSelectedGoals)}
@@ -123,7 +127,7 @@ export const AIExerciseRecommendations = () => {
                       : "bg-black/20 text-gray-400 border-gray-600/20 hover:bg-green-500/20"
                   )}
                 >
-                  {goal.split(' ')[0]}
+                  {goal}
                 </Badge>
               ))}
             </div>
@@ -131,7 +135,7 @@ export const AIExerciseRecommendations = () => {
           <div>
             <Label className="text-gray-300 text-xs mb-1.5 block">Muscles</Label>
             <div className="flex flex-wrap gap-1">
-              {muscleGroups.slice(0, 4).map((muscle) => (
+              {muscleGroups.map((muscle) => (
                 <Badge
                   key={muscle}
                   onClick={() => toggleSelection(muscle, selectedMuscles, setSelectedMuscles)}
@@ -164,7 +168,7 @@ export const AIExerciseRecommendations = () => {
           ) : (
             <>
               <Sparkles className="h-3.5 w-3.5 mr-1.5" />
-              Get Recommendations
+              Get Plan
             </>
           )}
         </Button>
@@ -177,15 +181,72 @@ export const AIExerciseRecommendations = () => {
           </div>
         )}
 
-        {/* Recommendations Display */}
-        {recommendations && (
-          <div className="p-3 rounded-lg bg-black/30 border border-purple-500/20">
-            <h3 className="text-white font-medium text-sm mb-2 flex items-center gap-1.5">
-              <Target className="h-3.5 w-3.5 text-purple-400" />
-              Your Plan
-            </h3>
-            <div className="text-gray-300 text-xs whitespace-pre-wrap leading-relaxed max-h-48 overflow-y-auto">
-              {recommendations}
+        {/* Plan Display */}
+        {plan && (
+          <div className="space-y-3 pt-2">
+            {/* Summary */}
+            <p className="text-gray-300 text-xs italic">{plan.summary}</p>
+
+            {/* Focus Areas Chart */}
+            <div className="space-y-1.5">
+              <Label className="text-gray-400 text-xs">Focus Distribution</Label>
+              {plan.focusAreas.map((area) => (
+                <div key={area.area} className="flex items-center gap-2">
+                  <span className="text-xs text-gray-400 w-16">{area.area}</span>
+                  <Progress value={area.percentage} className="h-2 flex-1" />
+                  <span className="text-xs text-gray-500 w-8">{area.percentage}%</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Exercises List */}
+            <div className="space-y-2">
+              <Label className="text-gray-400 text-xs">Your Exercises</Label>
+              {plan.exercises.map((ex, idx) => {
+                const matched = getMatchedExercise(ex.matchId);
+                return (
+                  <div
+                    key={idx}
+                    className="p-2 rounded-lg bg-black/30 border border-purple-500/20 space-y-1"
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        <Dumbbell className="h-3.5 w-3.5 text-purple-400" />
+                        <span className="text-white text-sm font-medium">{ex.name}</span>
+                      </div>
+                      <Badge className="text-xs bg-blue-500/20 text-blue-300 border-blue-400/30">
+                        {ex.sets}×{ex.reps}
+                      </Badge>
+                    </div>
+                    <p className="text-gray-400 text-xs flex items-start gap-1">
+                      <CheckCircle2 className="h-3 w-3 text-green-400 mt-0.5 shrink-0" />
+                      {ex.benefit}
+                    </p>
+                    {matched && (
+                      <a
+                        href={`#${matched.id}`}
+                        className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1"
+                      >
+                        <ArrowRight className="h-3 w-3" />
+                        View in library below
+                      </a>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Tips */}
+            <div className="space-y-1">
+              <Label className="text-gray-400 text-xs">Quick Tips</Label>
+              <ul className="space-y-1">
+                {plan.tips.map((tip, idx) => (
+                  <li key={idx} className="text-xs text-gray-300 flex items-start gap-1.5">
+                    <span className="text-purple-400">•</span>
+                    {tip}
+                  </li>
+                ))}
+              </ul>
             </div>
           </div>
         )}

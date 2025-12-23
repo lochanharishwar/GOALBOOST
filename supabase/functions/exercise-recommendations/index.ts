@@ -18,28 +18,40 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    const systemPrompt = `You are a professional fitness coach and exercise expert. Based on the user's preferences, fitness level, goals, available equipment, and target muscle groups, recommend 5 personalized exercises.
+    const systemPrompt = `You are a fitness coach. Return ONLY valid JSON with no markdown formatting. Based on user preferences, provide exercise recommendations in this exact structure:
 
-For each exercise recommendation, provide:
-1. Exercise name
-2. Category (one of: upper-body, lower-body, core, cardio, full-body, flexibility)
-3. Why this exercise is perfect for them (2-3 sentences)
-4. Recommended sets and reps based on their fitness level
-5. Key tips for proper form
+{
+  "summary": "One sentence overview of the plan",
+  "exercises": [
+    {
+      "name": "Exercise Name",
+      "category": "upper-body|lower-body|core|cardio|full-body|flexibility",
+      "sets": 3,
+      "reps": "10-12",
+      "benefit": "One short benefit sentence",
+      "matchId": "exercise-id-from-library-if-exists"
+    }
+  ],
+  "focusAreas": [
+    { "area": "Strength", "percentage": 40 },
+    { "area": "Cardio", "percentage": 30 },
+    { "area": "Flexibility", "percentage": 30 }
+  ],
+  "tips": ["Tip 1", "Tip 2", "Tip 3"]
+}
 
-Keep your recommendations practical, safe, and aligned with their goals. Consider their available equipment when making suggestions.`;
+Exercise library IDs to match: push-ups, pull-ups, bench-press, dumbbell-rows, overhead-press, dips, bicep-curls, tricep-extensions, lat-pulldowns, squats, lunges, deadlifts, leg-press, calf-raises, plank, crunches, leg-raises, russian-twists, mountain-climbers, burpees, jumping-jacks, high-knees, box-jumps, stretching, yoga-poses.
 
-    const userPrompt = `Please recommend exercises based on the following:
+Return 4-5 exercises. Use matchId only if exercise matches one from library.`;
 
-Fitness Level: ${fitnessLevel || 'Not specified'}
+    const userPrompt = `Create a workout plan:
+Level: ${fitnessLevel || 'beginner'}
 Goals: ${goals || 'General fitness'}
-Available Equipment: ${availableEquipment?.length > 0 ? availableEquipment.join(', ') : 'None/Bodyweight only'}
-Target Muscle Groups: ${targetMuscles?.length > 0 ? targetMuscles.join(', ') : 'Full body'}
-Additional Preferences: ${preferences || 'None specified'}
+Equipment: ${availableEquipment?.length > 0 ? availableEquipment.join(', ') : 'None'}
+Target: ${targetMuscles?.length > 0 ? targetMuscles.join(', ') : 'Full body'}
+Notes: ${preferences || 'None'}`;
 
-Please provide 5 personalized exercise recommendations that would be most beneficial.`;
-
-    console.log('Generating exercise recommendations for:', { fitnessLevel, goals, availableEquipment, targetMuscles });
+    console.log('Generating exercise recommendations for:', { fitnessLevel, goals });
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -78,12 +90,23 @@ Please provide 5 personalized exercise recommendations that would be most benefi
     }
 
     const data = await response.json();
-    const recommendations = data.choices?.[0]?.message?.content;
+    let content = data.choices?.[0]?.message?.content || '';
+    
+    // Clean markdown formatting if present
+    content = content.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
+    
+    let parsedPlan;
+    try {
+      parsedPlan = JSON.parse(content);
+    } catch (e) {
+      console.error('Failed to parse AI response:', content);
+      throw new Error('Failed to parse recommendations');
+    }
 
-    console.log('Successfully generated recommendations');
+    console.log('Successfully generated structured recommendations');
 
     return new Response(
-      JSON.stringify({ recommendations }),
+      JSON.stringify({ plan: parsedPlan }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
