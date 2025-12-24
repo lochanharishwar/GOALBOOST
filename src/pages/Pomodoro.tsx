@@ -1,8 +1,9 @@
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Play, Pause, RotateCcw, Settings, PictureInPicture2 } from 'lucide-react';
 import { SoundButton } from '@/components/SoundButton';
+import { FloatingTimer } from '@/components/FloatingTimer';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useClickSound, playTickSound, playCompletionChime } from '@/utils/soundUtils';
@@ -20,8 +21,6 @@ const Pomodoro = () => {
   const { playClickSound } = useClickSound();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const tickIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const pipWindowRef = useRef<Window | null>(null);
-  const pipCanvasRef = useRef<HTMLCanvasElement | null>(null);
 
   // Initialize timer with work time
   useEffect(() => {
@@ -145,140 +144,9 @@ const Pomodoro = () => {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
-  // Update PiP canvas when time changes
-  const updatePiPCanvas = useCallback(() => {
-    if (!pipCanvasRef.current || !pipWindowRef.current) return;
-    
-    const canvas = pipCanvasRef.current;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Clear canvas
-    ctx.fillStyle = mode === 'work' ? '#064e3b' : '#134e4a';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-    // Draw progress ring
-    const centerX = canvas.width / 2;
-    const centerY = canvas.height / 2 - 10;
-    const radius = 60;
-    
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
-    ctx.strokeStyle = 'rgba(255,255,255,0.2)';
-    ctx.lineWidth = 8;
-    ctx.stroke();
-
-    const currentProgress = mode === 'work' 
-      ? ((workTime * 60 - timeLeft) / (workTime * 60))
-      : ((breakTime * 60 - timeLeft) / (breakTime * 60));
-    
-    ctx.beginPath();
-    ctx.arc(centerX, centerY, radius, -Math.PI / 2, -Math.PI / 2 + (currentProgress * Math.PI * 2));
-    ctx.strokeStyle = mode === 'work' ? '#10b981' : '#14b8a6';
-    ctx.lineWidth = 8;
-    ctx.lineCap = 'round';
-    ctx.stroke();
-
-    // Draw time
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 32px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(formatTime(timeLeft), centerX, centerY);
-
-    // Draw mode label
-    ctx.font = '14px sans-serif';
-    ctx.fillStyle = 'rgba(255,255,255,0.7)';
-    ctx.fillText(mode === 'work' ? 'Focus' : 'Break', centerX, centerY + 45);
-
-    // Draw status
-    ctx.font = '12px sans-serif';
-    ctx.fillText(isActive ? '▶ Running' : '⏸ Paused', centerX, canvas.height - 15);
-  }, [timeLeft, mode, isActive, workTime, breakTime]);
-
-  // Update PiP when timer changes
-  useEffect(() => {
-    if (isPiPActive) {
-      updatePiPCanvas();
-    }
-  }, [timeLeft, mode, isActive, isPiPActive, updatePiPCanvas]);
-
-  // Clean up PiP on unmount
-  useEffect(() => {
-    return () => {
-      if (pipWindowRef.current) {
-        pipWindowRef.current.close();
-      }
-    };
-  }, []);
-
-  const togglePiP = async () => {
+  const togglePiP = () => {
     playClickSound();
-
-    if (isPiPActive && pipWindowRef.current) {
-      pipWindowRef.current.close();
-      pipWindowRef.current = null;
-      pipCanvasRef.current = null;
-      setIsPiPActive(false);
-      return;
-    }
-
-    // Create a small floating window
-    const pipWindow = window.open(
-      '',
-      'PomodoroTimer',
-      'width=200,height=220,left=100,top=100,toolbar=no,menubar=no,scrollbars=no,resizable=no,status=no'
-    );
-
-    if (!pipWindow) {
-      toast({
-        title: "Pop-up Blocked",
-        description: "Please allow pop-ups for this site to use Picture-in-Picture mode.",
-        variant: "destructive"
-      });
-      return;
-    }
-
-    pipWindowRef.current = pipWindow;
-
-    // Set up the PiP window content
-    pipWindow.document.write(`
-      <!DOCTYPE html>
-      <html>
-        <head>
-          <title>Timer</title>
-          <style>
-            body { 
-              margin: 0; 
-              padding: 0; 
-              overflow: hidden;
-              background: ${mode === 'work' ? '#064e3b' : '#134e4a'};
-            }
-            canvas { display: block; }
-          </style>
-        </head>
-        <body>
-          <canvas id="timerCanvas" width="200" height="220"></canvas>
-        </body>
-      </html>
-    `);
-    pipWindow.document.close();
-
-    // Wait for the document to be ready
-    setTimeout(() => {
-      if (pipWindow && !pipWindow.closed) {
-        pipCanvasRef.current = pipWindow.document.getElementById('timerCanvas') as HTMLCanvasElement;
-        setIsPiPActive(true);
-        updatePiPCanvas();
-
-        // Handle window close
-        pipWindow.onbeforeunload = () => {
-          setIsPiPActive(false);
-          pipWindowRef.current = null;
-          pipCanvasRef.current = null;
-        };
-      }
-    }, 100);
+    setIsPiPActive(!isPiPActive);
   };
 
   const progress = mode === 'work' 
@@ -286,16 +154,29 @@ const Pomodoro = () => {
     : ((breakTime * 60 - timeLeft) / (breakTime * 60)) * 100;
 
   return (
-    <div className={cn(
-      "min-h-screen relative overflow-hidden transition-all duration-500",
-      isDarkMode 
-        ? "bg-gradient-to-br from-slate-900 via-green-900 to-teal-900" 
-        : "bg-gradient-to-br from-green-50 via-teal-50 to-slate-100"
-    )}>
-      <Header 
-        isDarkMode={isDarkMode} 
-        onToggleTheme={toggleTheme}
-      />
+    <>
+      {/* Floating PiP Timer */}
+      {isPiPActive && (
+        <FloatingTimer
+          timeLeft={timeLeft}
+          mode={mode}
+          isActive={isActive}
+          workTime={workTime}
+          breakTime={breakTime}
+          onClose={() => setIsPiPActive(false)}
+        />
+      )}
+
+      <div className={cn(
+        "min-h-screen relative overflow-hidden transition-all duration-500",
+        isDarkMode 
+          ? "bg-gradient-to-br from-slate-900 via-green-900 to-teal-900" 
+          : "bg-gradient-to-br from-green-50 via-teal-50 to-slate-100"
+      )}>
+        <Header 
+          isDarkMode={isDarkMode} 
+          onToggleTheme={toggleTheme}
+        />
 
       <div className="relative max-w-4xl mx-auto px-6 py-8">
         <div className="text-center mb-8">
@@ -529,6 +410,7 @@ const Pomodoro = () => {
         )}
       </div>
     </div>
+    </>
   );
 };
 
