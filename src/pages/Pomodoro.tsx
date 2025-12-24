@@ -1,121 +1,39 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
 import { Play, Pause, RotateCcw, Settings, PictureInPicture2 } from 'lucide-react';
 import { SoundButton } from '@/components/SoundButton';
-import { FloatingTimer } from '@/components/FloatingTimer';
-import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
-import { useClickSound, playTickSound, playCompletionChime } from '@/utils/soundUtils';
+import { useClickSound } from '@/utils/soundUtils';
+import { useTimer } from '@/contexts/TimerContext';
 
 const Pomodoro = () => {
-  const [timeLeft, setTimeLeft] = useState(25 * 60);
-  const [isActive, setIsActive] = useState(false);
-  const [mode, setMode] = useState<'work' | 'break'>('work');
-  const [workTime, setWorkTime] = useState(25);
-  const [breakTime, setBreakTime] = useState(5);
+  const {
+    timeLeft,
+    setTimeLeft,
+    isActive,
+    mode,
+    workTime,
+    setWorkTime,
+    breakTime,
+    setBreakTime,
+    isPiPActive,
+    setIsPiPActive,
+    toggleTimer,
+    resetTimer,
+    switchMode,
+  } = useTimer();
+  
   const [isDarkMode, setIsDarkMode] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
-  const [isPiPActive, setIsPiPActive] = useState(false);
-  const { toast } = useToast();
   const { playClickSound } = useClickSound();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const tickIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Initialize timer with work time
+  // Initialize timer with work time on first mount
   useEffect(() => {
-    setTimeLeft(workTime * 60);
-  }, [workTime]);
-
-  useEffect(() => {
-    if (isActive && timeLeft > 0) {
-      intervalRef.current = setTimeout(() => {
-        setTimeLeft(timeLeft - 1);
-      }, 1000);
-    } else if (timeLeft === 0) {
-      setIsActive(false);
-      // Clear tick sound when timer ends
-      if (tickIntervalRef.current) {
-        clearInterval(tickIntervalRef.current);
-        tickIntervalRef.current = null;
-      }
-      
-      // Play completion chime
-      playCompletionChime();
-      
-      if (mode === 'work') {
-        toast({
-          title: "🎉 Work Session Complete!",
-          description: "Time for a well-deserved break!",
-        });
-        setMode('break');
-        setTimeLeft(breakTime * 60);
-      } else {
-        toast({
-          title: "✨ Break Complete!",
-          description: "Ready for another focused work session?",
-        });
-        setMode('work');
-        setTimeLeft(workTime * 60);
-      }
+    if (timeLeft === 25 * 60 && workTime !== 25) {
+      setTimeLeft(workTime * 60);
     }
-
-    return () => {
-      if (intervalRef.current) {
-        clearTimeout(intervalRef.current);
-      }
-    };
-  }, [isActive, timeLeft, mode, workTime, breakTime, toast]);
-
-  // Handle tick sound when timer is active
-  useEffect(() => {
-    if (isActive && timeLeft > 0) {
-      // Start ticking sound every second
-      tickIntervalRef.current = setInterval(() => {
-        playTickSound();
-      }, 1000);
-    } else {
-      // Clear tick sound when paused or completed
-      if (tickIntervalRef.current) {
-        clearInterval(tickIntervalRef.current);
-        tickIntervalRef.current = null;
-      }
-    }
-
-    return () => {
-      if (tickIntervalRef.current) {
-        clearInterval(tickIntervalRef.current);
-      }
-    };
-  }, [isActive, timeLeft]);
-
-  const toggleTimer = () => {
-    playClickSound();
-    setIsActive(!isActive);
-  };
-
-  const resetTimer = () => {
-    playClickSound();
-    setIsActive(false);
-    setTimeLeft(mode === 'work' ? workTime * 60 : breakTime * 60);
-    // Clear tick sound when resetting
-    if (tickIntervalRef.current) {
-      clearInterval(tickIntervalRef.current);
-      tickIntervalRef.current = null;
-    }
-  };
-
-  const switchMode = (newMode: 'work' | 'break') => {
-    playClickSound();
-    setMode(newMode);
-    setIsActive(false);
-    setTimeLeft(newMode === 'work' ? workTime * 60 : breakTime * 60);
-    // Clear tick sound when switching modes
-    if (tickIntervalRef.current) {
-      clearInterval(tickIntervalRef.current);
-      tickIntervalRef.current = null;
-    }
-  };
+  }, []);
 
   const toggleTheme = () => {
     playClickSound();
@@ -149,25 +67,27 @@ const Pomodoro = () => {
     setIsPiPActive(!isPiPActive);
   };
 
+  const handleToggleTimer = () => {
+    playClickSound();
+    toggleTimer();
+  };
+
+  const handleResetTimer = () => {
+    playClickSound();
+    resetTimer();
+  };
+
+  const handleSwitchMode = (newMode: 'work' | 'break') => {
+    playClickSound();
+    switchMode(newMode);
+  };
+
   const progress = mode === 'work' 
     ? ((workTime * 60 - timeLeft) / (workTime * 60)) * 100
     : ((breakTime * 60 - timeLeft) / (breakTime * 60)) * 100;
 
   return (
-    <>
-      {/* Floating PiP Timer */}
-      {isPiPActive && (
-        <FloatingTimer
-          timeLeft={timeLeft}
-          mode={mode}
-          isActive={isActive}
-          workTime={workTime}
-          breakTime={breakTime}
-          onClose={() => setIsPiPActive(false)}
-        />
-      )}
-
-      <div className={cn(
+    <div className={cn(
         "min-h-screen relative overflow-hidden transition-all duration-500",
         isDarkMode 
           ? "bg-gradient-to-br from-slate-900 via-green-900 to-teal-900" 
@@ -410,7 +330,6 @@ const Pomodoro = () => {
         )}
       </div>
     </div>
-    </>
   );
 };
 

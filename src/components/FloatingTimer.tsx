@@ -1,24 +1,19 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, GripHorizontal } from 'lucide-react';
+import { X, GripHorizontal, Play, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTimer } from '@/contexts/TimerContext';
 
-interface FloatingTimerProps {
-  timeLeft: number;
-  mode: 'work' | 'break';
-  isActive: boolean;
-  workTime: number;
-  breakTime: number;
-  onClose: () => void;
-}
-
-export const FloatingTimer = ({
-  timeLeft,
-  mode,
-  isActive,
-  workTime,
-  breakTime,
-  onClose
-}: FloatingTimerProps) => {
+export const FloatingTimer = () => {
+  const { 
+    timeLeft, 
+    mode, 
+    isActive, 
+    workTime, 
+    breakTime, 
+    setIsPiPActive,
+    toggleTimer 
+  } = useTimer();
+  
   const [position, setPosition] = useState({ x: window.innerWidth - 180, y: 100 });
   const [isDragging, setIsDragging] = useState(false);
   const dragRef = useRef<{ startX: number; startY: number; initialX: number; initialY: number } | null>(null);
@@ -102,11 +97,15 @@ export const FloatingTimer = ({
     };
   }, [isDragging]);
 
+  const onClose = () => {
+    setIsPiPActive(false);
+  };
+
   return (
     <div
       ref={containerRef}
       className={cn(
-        "fixed z-50 rounded-2xl shadow-2xl border overflow-hidden select-none",
+        "fixed z-[9999] rounded-2xl shadow-2xl border overflow-hidden select-none",
         "backdrop-blur-xl transition-shadow duration-200",
         mode === 'work' 
           ? "bg-emerald-900/95 border-emerald-500/30" 
@@ -168,6 +167,23 @@ export const FloatingTimer = ({
             </span>
           </div>
         </div>
+
+        {/* Play/Pause Button */}
+        <button
+          onClick={toggleTimer}
+          className={cn(
+            "w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-1 transition-all",
+            mode === 'work' 
+              ? "bg-emerald-500 hover:bg-emerald-400" 
+              : "bg-teal-500 hover:bg-teal-400"
+          )}
+        >
+          {isActive ? (
+            <Pause className="h-4 w-4 text-white" />
+          ) : (
+            <Play className="h-4 w-4 text-white ml-0.5" />
+          )}
+        </button>
 
         {/* Status */}
         <div className={cn(
