@@ -2,6 +2,8 @@ import { createContext, useContext, useState, useEffect, useRef, ReactNode, useC
 import { useToast } from '@/hooks/use-toast';
 import { playTickSound } from '@/utils/soundUtils';
 
+export type AlarmSound = 'classic' | 'gentle' | 'urgent' | 'chime' | 'digital';
+
 interface TimerContextType {
   timeLeft: number;
   setTimeLeft: (time: number) => void;
@@ -20,6 +22,8 @@ interface TimerContextType {
   toggleTimer: () => void;
   resetTimer: () => void;
   switchMode: (mode: 'work' | 'break') => void;
+  alarmSound: AlarmSound;
+  setAlarmSound: (sound: AlarmSound) => void;
 }
 
 const TimerContext = createContext<TimerContextType | undefined>(undefined);
@@ -41,17 +45,16 @@ interface TimerState {
   workTime: number;
   breakTime: number;
   isPiPActive: boolean;
+  alarmSound: AlarmSound;
   lastUpdated: number;
 }
 
 export const TimerProvider = ({ children }: { children: ReactNode }) => {
-  // Load initial state from localStorage
   const getInitialState = (): Partial<TimerState> => {
     try {
       const saved = localStorage.getItem(TIMER_STORAGE_KEY);
       if (saved) {
         const state: TimerState = JSON.parse(saved);
-        // Calculate elapsed time if timer was active
         if (state.isActive && state.lastUpdated) {
           const elapsed = Math.floor((Date.now() - state.lastUpdated) / 1000);
           const newTimeLeft = Math.max(0, state.timeLeft - elapsed);
@@ -74,6 +77,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
   const [breakTime, setBreakTime] = useState(initialState.breakTime ?? 5);
   const [isPiPActive, setIsPiPActive] = useState(initialState.isPiPActive ?? false);
   const [isAlarmRinging, setIsAlarmRinging] = useState(false);
+  const [alarmSound, setAlarmSound] = useState<AlarmSound>(initialState.alarmSound ?? 'classic');
   
   const { toast } = useToast();
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -82,7 +86,6 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
   const alarmContextRef = useRef<AudioContext | null>(null);
   const alarmSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
-  // Save state to localStorage
   useEffect(() => {
     try {
       const state: TimerState = {
@@ -92,15 +95,86 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
         workTime,
         breakTime,
         isPiPActive,
+        alarmSound,
         lastUpdated: Date.now()
       };
       localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(state));
     } catch (error) {
       console.warn('Failed to save timer state:', error);
     }
-  }, [timeLeft, isActive, mode, workTime, breakTime, isPiPActive]);
+  }, [timeLeft, isActive, mode, workTime, breakTime, isPiPActive, alarmSound]);
 
-  // Continuous alarm sound
+  const createAlarmBuffer = useCallback((ctx: AudioContext, type: AlarmSound): AudioBuffer => {
+    const sampleRate = ctx.sampleRate;
+    const duration = 1.2;
+    const length = sampleRate * duration;
+    const buffer = ctx.createBuffer(1, length, sampleRate);
+    const data = buffer.getChannelData(0);
+
+    switch (type) {
+      case 'gentle': {
+        // Soft bell-like chime
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const envelope = Math.exp(-t * 3);
+          const freq1 = 523.25; // C5
+          const freq2 = 659.25; // E5
+          data[i] = envelope * (
+            Math.sin(2 * Math.PI * freq1 * t) * 0.4 +
+            Math.sin(2 * Math.PI * freq2 * t) * 0.3
+          );
+        }
+        break;
+      }
+      case 'urgent': {
+        // Fast beeping alarm
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const beepCycle = Math.floor(t * 8) % 2;
+          const envelope = beepCycle === 0 ? 1 : 0.1;
+          data[i] = envelope * Math.sin(2 * Math.PI * 880 * t) * 0.6;
+        }
+        break;
+      }
+      case 'chime': {
+        // Musical chime sequence
+        const notes = [523.25, 659.25, 783.99, 1046.5]; // C5, E5, G5, C6
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const noteIndex = Math.min(Math.floor(t * 4), notes.length - 1);
+          const noteStart = noteIndex / 4;
+          const noteT = t - noteStart;
+          const envelope = Math.exp(-noteT * 4);
+          data[i] = envelope * Math.sin(2 * Math.PI * notes[noteIndex] * t) * 0.4;
+        }
+        break;
+      }
+      case 'digital': {
+        // Retro digital sound
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const cycle = Math.floor(t * 6) % 3;
+          const freqs = [1000, 1200, 800];
+          const envelope = Math.sin(Math.PI * (t % (1/6)) * 6);
+          data[i] = envelope * (Math.sin(2 * Math.PI * freqs[cycle] * t) > 0 ? 0.4 : -0.4);
+        }
+        break;
+      }
+      default: { // classic
+        // Classic alternating alarm
+        for (let i = 0; i < length; i++) {
+          const t = i / sampleRate;
+          const cycle = Math.floor(t * 4) % 2;
+          const frequency = cycle === 0 ? 800 : 1000;
+          const envelope = Math.sin(Math.PI * (t % 0.25) / 0.25);
+          data[i] = envelope * Math.sin(2 * Math.PI * frequency * t) * 0.5;
+        }
+      }
+    }
+
+    return buffer;
+  }, []);
+
   const playAlarmSound = useCallback(() => {
     try {
       if (!alarmContextRef.current) {
@@ -112,21 +186,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
         ctx.resume();
       }
 
-      const sampleRate = ctx.sampleRate;
-      const duration = 1.0;
-      const length = sampleRate * duration;
-      const buffer = ctx.createBuffer(1, length, sampleRate);
-      const data = buffer.getChannelData(0);
-
-      // Alarm sound - alternating frequencies
-      for (let i = 0; i < length; i++) {
-        const t = i / sampleRate;
-        const cycle = Math.floor(t * 4) % 2;
-        const frequency = cycle === 0 ? 800 : 1000;
-        const envelope = Math.sin(Math.PI * (t % 0.25) / 0.25);
-        data[i] = envelope * Math.sin(2 * Math.PI * frequency * t) * 0.6;
-      }
-
+      const buffer = createAlarmBuffer(ctx, alarmSound);
       const source = ctx.createBufferSource();
       source.buffer = buffer;
       source.connect(ctx.destination);
@@ -135,7 +195,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.log('Error playing alarm:', error);
     }
-  }, []);
+  }, [alarmSound, createAlarmBuffer]);
 
   const stopAlarm = useCallback(() => {
     setIsAlarmRinging(false);
@@ -156,10 +216,9 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     playAlarmSound();
     alarmIntervalRef.current = setInterval(() => {
       playAlarmSound();
-    }, 1200);
+    }, 1400);
   }, [playAlarmSound]);
 
-  // Timer logic
   useEffect(() => {
     if (isActive && timeLeft > 0) {
       intervalRef.current = setTimeout(() => {
@@ -172,7 +231,6 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
         tickIntervalRef.current = null;
       }
       
-      // Start continuous alarm
       startAlarm();
       
       if (mode === 'work') {
@@ -199,7 +257,6 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [isActive, timeLeft, mode, workTime, breakTime, toast, startAlarm]);
 
-  // Handle tick sound
   useEffect(() => {
     if (isActive && timeLeft > 0) {
       tickIntervalRef.current = setInterval(() => {
@@ -219,10 +276,8 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     };
   }, [isActive, timeLeft]);
 
-  // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger if user is typing in an input
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
         return;
       }
@@ -304,6 +359,8 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
         toggleTimer,
         resetTimer,
         switchMode,
+        alarmSound,
+        setAlarmSound,
       }}
     >
       {children}

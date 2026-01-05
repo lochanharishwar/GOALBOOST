@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { X, GripHorizontal, Play, Pause, Volume2, VolumeX } from 'lucide-react';
+import { X, GripHorizontal, Play, Pause, VolumeX } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTimer } from '@/contexts/TimerContext';
 
@@ -18,7 +18,6 @@ export const FloatingTimer = () => {
     toggleTimer 
   } = useTimer();
   
-  // Load position from localStorage
   const getInitialPosition = () => {
     try {
       const saved = localStorage.getItem(FLOATING_POSITION_KEY);
@@ -26,7 +25,7 @@ export const FloatingTimer = () => {
         return JSON.parse(saved);
       }
     } catch (e) {}
-    return { x: window.innerWidth - 180, y: 100 };
+    return { x: window.innerWidth - 200, y: 80 };
   };
   
   const [position, setPosition] = useState(getInitialPosition);
@@ -34,7 +33,6 @@ export const FloatingTimer = () => {
   const dragRef = useRef<{ startX: number; startY: number; initialX: number; initialY: number } | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
-  // Save position to localStorage
   useEffect(() => {
     if (!isDragging) {
       try {
@@ -82,8 +80,8 @@ export const FloatingTimer = () => {
       const deltaX = e.clientX - dragRef.current.startX;
       const deltaY = e.clientY - dragRef.current.startY;
       
-      const newX = Math.max(0, Math.min(window.innerWidth - 160, dragRef.current.initialX + deltaX));
-      const newY = Math.max(0, Math.min(window.innerHeight - 120, dragRef.current.initialY + deltaY));
+      const newX = Math.max(0, Math.min(window.innerWidth - 180, dragRef.current.initialX + deltaX));
+      const newY = Math.max(0, Math.min(window.innerHeight - 140, dragRef.current.initialY + deltaY));
       
       setPosition({ x: newX, y: newY });
     };
@@ -95,8 +93,8 @@ export const FloatingTimer = () => {
       const deltaX = touch.clientX - dragRef.current.startX;
       const deltaY = touch.clientY - dragRef.current.startY;
       
-      const newX = Math.max(0, Math.min(window.innerWidth - 160, dragRef.current.initialX + deltaX));
-      const newY = Math.max(0, Math.min(window.innerHeight - 120, dragRef.current.initialY + deltaY));
+      const newX = Math.max(0, Math.min(window.innerWidth - 180, dragRef.current.initialX + deltaX));
+      const newY = Math.max(0, Math.min(window.innerHeight - 140, dragRef.current.initialY + deltaY));
       
       setPosition({ x: newX, y: newY });
     };
@@ -109,7 +107,7 @@ export const FloatingTimer = () => {
     if (isDragging) {
       document.addEventListener('mousemove', handleMouseMove);
       document.addEventListener('mouseup', handleEnd);
-      document.addEventListener('touchmove', handleTouchMove);
+      document.addEventListener('touchmove', handleTouchMove, { passive: false });
       document.addEventListener('touchend', handleEnd);
     }
 
@@ -125,62 +123,75 @@ export const FloatingTimer = () => {
     setIsPiPActive(false);
   };
 
+  const strokeColor = isAlarmRinging 
+    ? 'hsl(0, 84%, 60%)' 
+    : mode === 'work' 
+      ? 'hsl(158, 64%, 50%)' 
+      : 'hsl(168, 60%, 50%)';
+
   return (
     <div
       ref={containerRef}
       className={cn(
-        "fixed z-[9999] rounded-2xl shadow-2xl border overflow-hidden select-none",
-        "backdrop-blur-xl transition-shadow duration-200",
+        "fixed z-[2147483647] rounded-2xl shadow-2xl overflow-hidden select-none",
+        "backdrop-blur-xl transition-all duration-300 animate-scale-in",
         isAlarmRinging 
-          ? "bg-red-900/95 border-red-500/50 animate-pulse" 
+          ? "bg-destructive/90 border-2 border-destructive animate-ring-alarm" 
           : mode === 'work' 
-            ? "bg-emerald-900/95 border-emerald-500/30" 
-            : "bg-teal-900/95 border-teal-500/30",
-        isDragging && "shadow-emerald-500/20 shadow-2xl"
+            ? "bg-card/95 border border-primary/30 glow-primary" 
+            : "bg-card/95 border border-accent/30 glow-accent",
+        isDragging && "scale-105 shadow-2xl"
       )}
       style={{
         left: position.x,
         top: position.y,
-        width: '150px',
+        width: '170px',
       }}
     >
       {/* Drag Handle */}
       <div
-        className="flex items-center justify-between px-3 py-1.5 cursor-grab active:cursor-grabbing bg-black/20"
+        className={cn(
+          "flex items-center justify-between px-3 py-2 cursor-grab active:cursor-grabbing transition-colors",
+          isAlarmRinging ? "bg-destructive/20" : "bg-muted/50"
+        )}
         onMouseDown={handleMouseDown}
         onTouchStart={handleTouchStart}
       >
-        <GripHorizontal className="h-3 w-3 text-white/50" />
-        <span className="text-[10px] text-white/60 uppercase tracking-wider font-medium">
-          {isAlarmRinging ? 'ALARM' : mode === 'work' ? 'Focus' : 'Break'}
+        <GripHorizontal className="h-3.5 w-3.5 text-muted-foreground" />
+        <span className={cn(
+          "text-[11px] uppercase tracking-wider font-semibold",
+          isAlarmRinging ? "text-destructive-foreground" : "text-muted-foreground"
+        )}>
+          {isAlarmRinging ? '🔔 ALARM' : mode === 'work' ? 'Focus' : 'Break'}
         </span>
         <button 
           onClick={onClose}
-          className="text-white/50 hover:text-white transition-colors p-0.5"
+          className="text-muted-foreground hover:text-foreground transition-colors p-0.5 rounded hover:bg-muted/50"
         >
-          <X className="h-3 w-3" />
+          <X className="h-3.5 w-3.5" />
         </button>
       </div>
 
       {/* Timer Content */}
-      <div className="p-3 text-center">
-        {/* Mini Progress Ring */}
-        <div className="relative w-16 h-16 mx-auto mb-1">
+      <div className="p-4 text-center">
+        {/* Progress Ring */}
+        <div className="relative w-20 h-20 mx-auto mb-2">
           <svg className="w-full h-full transform -rotate-90" viewBox="0 0 100 100">
             <circle
               cx="50"
               cy="50"
               r="42"
-              stroke="rgba(255,255,255,0.1)"
-              strokeWidth="8"
+              stroke="currentColor"
+              className="text-muted/30"
+              strokeWidth="6"
               fill="none"
             />
             <circle
               cx="50"
               cy="50"
               r="42"
-              stroke={isAlarmRinging ? "#ef4444" : mode === 'work' ? "#10b981" : "#14b8a6"}
-              strokeWidth="8"
+              stroke={strokeColor}
+              strokeWidth="6"
               fill="none"
               strokeLinecap="round"
               strokeDasharray={`${progress * 2.64} 264`}
@@ -188,7 +199,10 @@ export const FloatingTimer = () => {
             />
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-lg font-bold text-white">
+            <span className={cn(
+              "text-xl font-bold transition-colors",
+              isAlarmRinging ? "text-destructive-foreground" : "text-foreground"
+            )}>
               {formatTime(timeLeft)}
             </span>
           </div>
@@ -198,38 +212,46 @@ export const FloatingTimer = () => {
         {isAlarmRinging ? (
           <button
             onClick={stopAlarm}
-            className="w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-1 transition-all bg-red-500 hover:bg-red-400"
+            className="w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 transition-all bg-destructive hover:bg-destructive/80 animate-pulse"
           >
-            <VolumeX className="h-4 w-4 text-white" />
+            <VolumeX className="h-5 w-5 text-destructive-foreground" />
           </button>
         ) : (
           <button
             onClick={toggleTimer}
             className={cn(
-              "w-8 h-8 rounded-full flex items-center justify-center mx-auto mb-1 transition-all",
+              "w-10 h-10 rounded-full flex items-center justify-center mx-auto mb-2 transition-all hover:scale-110",
               mode === 'work' 
-                ? "bg-emerald-500 hover:bg-emerald-400" 
-                : "bg-teal-500 hover:bg-teal-400"
+                ? "bg-primary hover:bg-primary/90 text-primary-foreground" 
+                : "bg-accent hover:bg-accent/90 text-accent-foreground"
             )}
           >
             {isActive ? (
-              <Pause className="h-4 w-4 text-white" />
+              <Pause className="h-5 w-5" />
             ) : (
-              <Play className="h-4 w-4 text-white ml-0.5" />
+              <Play className="h-5 w-5 ml-0.5" />
             )}
           </button>
         )}
 
         {/* Status */}
         <div className={cn(
-          "text-[10px] font-medium px-2 py-0.5 rounded-full inline-block",
+          "text-[10px] font-medium px-3 py-1 rounded-full inline-flex items-center gap-1.5",
           isAlarmRinging 
-            ? "bg-red-500/30 text-red-300"
+            ? "bg-destructive/30 text-destructive-foreground"
             : isActive 
-              ? "bg-green-500/20 text-green-400" 
-              : "bg-white/10 text-white/60"
+              ? "bg-primary/20 text-primary" 
+              : "bg-muted text-muted-foreground"
         )}>
-          {isAlarmRinging ? '🔔 Stop Alarm' : isActive ? '● Running' : '○ Paused'}
+          <span className={cn(
+            "w-1.5 h-1.5 rounded-full",
+            isAlarmRinging 
+              ? "bg-destructive-foreground animate-pulse"
+              : isActive 
+                ? "bg-primary animate-pulse" 
+                : "bg-muted-foreground"
+          )} />
+          {isAlarmRinging ? 'Stop Alarm' : isActive ? 'Running' : 'Paused'}
         </div>
       </div>
     </div>
