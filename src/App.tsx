@@ -10,33 +10,32 @@ import Reminders from '@/pages/Reminders';
 import Exercises from '@/pages/Exercises';
 import NotFound from '@/pages/NotFound';
 
-const FloatingTimerWrapper = () => {
+function FloatingTimerWrapper() {
   const { isPiPActive } = useTimer();
-  return isPiPActive ? <FloatingTimer /> : null;
-};
+  if (!isPiPActive) return null;
+  return <FloatingTimer />;
+}
 
-function AppContent() {
+function AppRoutes() {
   return (
-    <>
-      <Routes>
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/analytics" element={<Analytics />} />
-        <Route path="/habits" element={<Habits />} />
-        <Route path="/pomodoro" element={<Pomodoro />} />
-        <Route path="/reminders" element={<Reminders />} />
-        <Route path="/exercises" element={<Exercises />} />
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-      <FloatingTimerWrapper />
-      <Toaster />
-    </>
+    <Routes>
+      <Route path="/" element={<Dashboard />} />
+      <Route path="/analytics" element={<Analytics />} />
+      <Route path="/habits" element={<Habits />} />
+      <Route path="/pomodoro" element={<Pomodoro />} />
+      <Route path="/reminders" element={<Reminders />} />
+      <Route path="/exercises" element={<Exercises />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
 function App() {
   return (
     <TimerProvider>
-      <AppContent />
+      <AppRoutes />
+      <FloatingTimerWrapper />
+      <Toaster />
     </TimerProvider>
   );
 }
