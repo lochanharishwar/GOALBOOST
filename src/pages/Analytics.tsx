@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Header } from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ChartContainer, ChartTooltip, ChartTooltipContent } from '@/components/ui/chart';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, CartesianGrid, Area, AreaChart } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, CartesianGrid, Area, AreaChart, Tooltip } from 'recharts';
 import { Calendar, TrendingUp, Target, Award, Clock, CheckCircle, Zap, ArrowUpRight, ArrowDownRight } from 'lucide-react';
 import { Task } from '@/types/task';
 import { format, subDays } from 'date-fns';
@@ -218,9 +217,14 @@ const Analytics = () => {
                       tickLine={false}
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                     />
-                    <ChartTooltip 
-                      content={<ChartTooltipContent />}
+                    <Tooltip 
                       cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                      contentStyle={{ 
+                        backgroundColor: 'hsl(var(--background))', 
+                        border: '1px solid hsl(var(--border))',
+                        borderRadius: '8px',
+                        color: 'hsl(var(--foreground))'
+                      }}
                     />
                     <Bar dataKey="tasks" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Total" />
                     <Bar dataKey="completed" fill="#10b981" radius={[4, 4, 0, 0]} name="Completed" />
@@ -258,7 +262,14 @@ const Analytics = () => {
                           <Cell key={`cell-${index}`} fill={entry.color} stroke="transparent" />
                         ))}
                       </Pie>
-                      <ChartTooltip />
+                      <Tooltip 
+                        contentStyle={{ 
+                          backgroundColor: 'hsl(var(--background))', 
+                          border: '1px solid hsl(var(--border))',
+                          borderRadius: '8px',
+                          color: 'hsl(var(--foreground))'
+                        }}
+                      />
                     </PieChart>
                   </ResponsiveContainer>
                 ) : (
@@ -315,7 +326,14 @@ const Analytics = () => {
                     domain={[0, 100]}
                     tickFormatter={(v) => `${v}%`}
                   />
-                  <ChartTooltip content={<ChartTooltipContent />} />
+                  <Tooltip 
+                    contentStyle={{ 
+                      backgroundColor: 'hsl(var(--background))', 
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                      color: 'hsl(var(--foreground))'
+                    }}
+                  />
                   <Area 
                     type="monotone" 
                     dataKey="completionRate" 
