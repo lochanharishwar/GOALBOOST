@@ -9,6 +9,7 @@ import { SoundButton } from '@/components/SoundButton';
 import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useClickSound, playBellSound } from '@/utils/soundUtils';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface Reminder {
   id: string;
@@ -23,11 +24,11 @@ const Reminders = () => {
   const [reminders, setReminders] = useState<Reminder[]>([]);
   const [newReminderText, setNewReminderText] = useState('');
   const [newReminderTime, setNewReminderTime] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [notificationPermission, setNotificationPermission] = useState<NotificationPermission>('default');
   const [ringingReminderId, setRingingReminderId] = useState<string | null>(null);
   const { toast } = useToast();
   const { playClickSound } = useClickSound();
+  const { isDarkMode } = useTheme();
   
   const alarmContextRef = useRef<AudioContext | null>(null);
   const alarmIntervalRef = useRef<NodeJS.Timeout | null>(null);
@@ -55,14 +56,9 @@ const Reminders = () => {
         }));
         setReminders(Array.isArray(migratedReminders) ? migratedReminders : []);
       }
-      
-      if (savedTheme) {
-        setIsDarkMode(savedTheme === 'dark');
-      }
     } catch (error) {
       console.warn('Failed to load saved reminders:', error);
       localStorage.removeItem('goalflow-reminders');
-      localStorage.removeItem('goalflow-theme');
     }
   }, []);
 
@@ -251,11 +247,6 @@ const Reminders = () => {
     }
   };
 
-  const toggleTheme = () => {
-    playClickSound();
-    setIsDarkMode(!isDarkMode);
-  };
-
   const activeReminders = reminders.filter(r => r.isActive).length;
   const totalReminders = reminders.length;
 
@@ -278,10 +269,7 @@ const Reminders = () => {
         )} />
       </div>
 
-      <Header 
-        isDarkMode={isDarkMode} 
-        onToggleTheme={toggleTheme}
-      />
+      <Header />
 
       <div className="relative max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
         {/* Hero Section */}

@@ -12,6 +12,7 @@ import { Calendar, CheckCircle, Target, TrendingUp, Plus, Edit, Trash2, BookOpen
 import { cn } from '@/lib/utils';
 import { useClickSound } from '@/utils/soundUtils';
 import { useToast } from '@/hooks/use-toast';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface Habit {
   id: string;
@@ -28,7 +29,6 @@ interface Habit {
 
 const Habits = () => {
   const [habits, setHabits] = useState<Habit[]>([]);
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editingHabit, setEditingHabit] = useState<Habit | null>(null);
   const [newHabit, setNewHabit] = useState({
@@ -42,7 +42,7 @@ const Habits = () => {
 
   const { playClickSound } = useClickSound();
   const { toast } = useToast();
-
+  const { isDarkMode } = useTheme();
   useEffect(() => {
     const savedHabits = localStorage.getItem('aspiraHabits');
     if (savedHabits) {
@@ -53,11 +53,6 @@ const Habits = () => {
   useEffect(() => {
     localStorage.setItem('aspiraHabits', JSON.stringify(habits));
   }, [habits]);
-
-  const toggleTheme = () => {
-    playClickSound();
-    setIsDarkMode(!isDarkMode);
-  };
 
   const addHabit = () => {
     if (newHabit.name.trim()) {
@@ -218,10 +213,7 @@ const Habits = () => {
         ? "bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900" 
         : "bg-gradient-to-br from-purple-50 via-indigo-50 to-slate-100"
     )}>
-      <Header 
-        isDarkMode={isDarkMode} 
-        onToggleTheme={toggleTheme}
-      />
+      <Header />
 
       <div className="relative max-w-7xl mx-auto px-6 py-8">
         <div className="mb-8">

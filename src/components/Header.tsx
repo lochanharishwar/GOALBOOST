@@ -1,26 +1,24 @@
-
-import { Button } from '@/components/ui/button';
 import { Moon, Sun, User, Zap, Calendar, Menu, X } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { SoundButton } from '@/components/SoundButton';
+import { useTheme } from '@/contexts/ThemeContext';
 
 interface HeaderProps {
-  isDarkMode: boolean;
-  onToggleTheme: () => void;
   selectedDate?: Date;
   onDateSelect?: (date: Date) => void;
 }
 
-export const Header = ({ isDarkMode, onToggleTheme, selectedDate, onDateSelect }: HeaderProps) => {
+export const Header = ({ selectedDate, onDateSelect }: HeaderProps) => {
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -39,7 +37,7 @@ export const Header = ({ isDarkMode, onToggleTheme, selectedDate, onDateSelect }
   };
 
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-xl border-b border-border/50 shadow-lg">
+    <header className="sticky top-0 z-50 bg-background/95 backdrop-blur-xl border-b border-border shadow-lg">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4">
         <div className="flex items-center justify-between">
           {/* Brand Logo */}
@@ -49,7 +47,7 @@ export const Header = ({ isDarkMode, onToggleTheme, selectedDate, onDateSelect }
               <div className="absolute inset-0 bg-primary blur-lg opacity-30 animate-pulse"></div>
             </div>
             <div>
-              <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-primary via-primary to-foreground bg-clip-text text-transparent tracking-wide font-inter">
+              <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent tracking-wide font-inter">
                 GoalFlow
               </h1>
               <p className="text-xs text-muted-foreground font-medium tracking-wider font-inter hidden sm:block">
@@ -111,7 +109,7 @@ export const Header = ({ isDarkMode, onToggleTheme, selectedDate, onDateSelect }
               variant="outline"
               size="icon"
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="md:hidden bg-background/50 border-border text-foreground hover:bg-primary/10 transition-all duration-300"
+              className="md:hidden bg-secondary/50 border-border text-foreground hover:bg-primary/10 transition-all duration-300"
             >
               {isMobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
             </SoundButton>
@@ -121,15 +119,15 @@ export const Header = ({ isDarkMode, onToggleTheme, selectedDate, onDateSelect }
               <SoundButton
                 variant="outline"
                 size="icon"
-                onClick={onToggleTheme}
-                className="bg-background/50 border-border text-foreground hover:bg-primary/10 transition-all duration-300"
+                onClick={toggleTheme}
+                className="bg-secondary/50 border-border text-foreground hover:bg-primary/10 transition-all duration-300"
               >
                 {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
               </SoundButton>
               <SoundButton
                 variant="outline"
                 size="icon"
-                className="bg-background/50 border-border text-foreground hover:bg-primary/10 transition-all duration-300"
+                className="bg-secondary/50 border-border text-foreground hover:bg-primary/10 transition-all duration-300"
               >
                 <User className="h-4 w-4" />
               </SoundButton>
@@ -160,15 +158,15 @@ export const Header = ({ isDarkMode, onToggleTheme, selectedDate, onDateSelect }
                 <SoundButton
                   variant="outline"
                   size="icon"
-                  onClick={onToggleTheme}
-                  className="bg-background/50 border-border text-foreground hover:bg-primary/10 transition-all duration-300"
+                  onClick={toggleTheme}
+                  className="bg-secondary/50 border-border text-foreground hover:bg-primary/10 transition-all duration-300"
                 >
                   {isDarkMode ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
                 </SoundButton>
                 <SoundButton
                   variant="outline"
                   size="icon"
-                  className="bg-background/50 border-border text-foreground hover:bg-primary/10 transition-all duration-300"
+                  className="bg-secondary/50 border-border text-foreground hover:bg-primary/10 transition-all duration-300"
                 >
                   <User className="h-4 w-4" />
                 </SoundButton>

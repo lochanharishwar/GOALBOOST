@@ -1,17 +1,19 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { Header } from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, LineChart, Line, PieChart, Pie, Cell, CartesianGrid, Area, AreaChart, Tooltip } from 'recharts';
-import { Calendar, TrendingUp, Target, Award, Clock, CheckCircle, Zap, ArrowUpRight, ArrowDownRight } from 'lucide-react';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, Area, AreaChart, Tooltip } from 'recharts';
+import { Calendar, TrendingUp, Target, Award, CheckCircle, Zap, ArrowUpRight, ArrowDownRight, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Task } from '@/types/task';
 import { format, subDays } from 'date-fns';
 import { cn } from '@/lib/utils';
-import { useClickSound } from '@/utils/soundUtils';
+import { useTheme } from '@/contexts/ThemeContext';
+import { Button } from '@/components/ui/button';
 
 const Analytics = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
-  const [isDarkMode, setIsDarkMode] = useState(true);
-  const { playClickSound } = useClickSound();
+  const { isDarkMode } = useTheme();
+  const carouselRef = useRef<HTMLDivElement>(null);
+  const [activeChart, setActiveChart] = useState(0);
 
   useEffect(() => {
     const savedTasks = localStorage.getItem('goalflow-tasks');
@@ -42,9 +44,12 @@ const Analytics = () => {
     };
   }, []);
 
-  const toggleTheme = () => {
-    playClickSound();
-    setIsDarkMode(!isDarkMode);
+  const scrollToChart = (index: number) => {
+    if (carouselRef.current) {
+      const chartWidth = carouselRef.current.offsetWidth;
+      carouselRef.current.scrollTo({ left: chartWidth * index, behavior: 'smooth' });
+      setActiveChart(index);
+    }
   };
 
   // Calculate statistics
@@ -104,10 +109,7 @@ const Analytics = () => {
         <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
       </div>
 
-      <Header 
-        isDarkMode={isDarkMode} 
-        onToggleTheme={toggleTheme}
-      />
+      <Header />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Page Header */}

@@ -6,6 +6,7 @@ import { SoundButton } from '@/components/SoundButton';
 import { cn } from '@/lib/utils';
 import { useClickSound } from '@/utils/soundUtils';
 import { useTimer, AlarmSound } from '@/contexts/TimerContext';
+import { useTheme } from '@/contexts/ThemeContext';
 
 const ALARM_SOUNDS: { value: AlarmSound; label: string; description: string }[] = [
   { value: 'classic', label: 'Classic', description: 'Traditional alarm beep' },
@@ -36,17 +37,9 @@ const Pomodoro = () => {
     setAlarmSound,
   } = useTimer();
   
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [showSettings, setShowSettings] = useState(false);
   const { playClickSound } = useClickSound();
-
-  useEffect(() => {
-    if (isDarkMode) {
-      document.documentElement.classList.add('dark');
-    } else {
-      document.documentElement.classList.remove('dark');
-    }
-  }, [isDarkMode]);
+  const { isDarkMode } = useTheme();
 
   useEffect(() => {
     if (timeLeft === 25 * 60 && workTime !== 25) {
@@ -142,10 +135,7 @@ const Pomodoro = () => {
         )} style={{ animationDirection: 'reverse' }} />
       </div>
 
-      <Header 
-        isDarkMode={isDarkMode} 
-        onToggleTheme={toggleTheme}
-      />
+      <Header />
 
       <div className="relative max-w-4xl mx-auto px-6 py-8">
         <div className="text-center mb-8 animate-fade-slide-up">

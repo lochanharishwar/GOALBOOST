@@ -1,6 +1,7 @@
 import { Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { TimerProvider, useTimer } from '@/contexts/TimerContext';
+import { ThemeProvider } from '@/contexts/ThemeContext';
 import { FloatingTimer } from '@/components/FloatingTimer';
 import Dashboard from '@/pages/Dashboard';
 import Analytics from '@/pages/Analytics';
@@ -32,11 +33,13 @@ function AppRoutes() {
 
 function App() {
   return (
-    <TimerProvider>
-      <AppRoutes />
-      <FloatingTimerWrapper />
-      <Toaster />
-    </TimerProvider>
+    <ThemeProvider>
+      <TimerProvider>
+        <AppRoutes />
+        <FloatingTimerWrapper />
+        <Toaster />
+      </TimerProvider>
+    </ThemeProvider>
   );
 }
 

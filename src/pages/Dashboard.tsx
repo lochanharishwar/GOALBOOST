@@ -17,6 +17,8 @@ import { cn } from '@/lib/utils';
 import { useClickSound } from '@/utils/soundUtils';
 import { checkForNewAchievements, calculateStreak } from '@/utils/achievementUtils';
 
+import { useTheme } from '@/contexts/ThemeContext';
+
 const Dashboard = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [selectedDate, setSelectedDate] = useState<Date>(new Date());
@@ -24,7 +26,6 @@ const Dashboard = () => {
   const [newTaskPriority, setNewTaskPriority] = useState<'urgent' | 'daily' | 'long-term'>('daily');
   const [newTaskCategory, setNewTaskCategory] = useState<'work' | 'personal' | 'health' | 'learning' | 'finance'>('personal');
   const [newTaskTime, setNewTaskTime] = useState('');
-  const [isDarkMode, setIsDarkMode] = useState(true);
   const [calendarOpen, setCalendarOpen] = useState(false);
   const [userStats, setUserStats] = useState<UserStats>({
     currentStreak: 0,
@@ -34,6 +35,7 @@ const Dashboard = () => {
   });
   const { toast } = useToast();
   const { playClickSound } = useClickSound();
+  const { isDarkMode } = useTheme();
 
   const selectedDateString = format(selectedDate, 'yyyy-MM-dd');
 
@@ -41,16 +43,11 @@ const Dashboard = () => {
   useEffect(() => {
     try {
       const savedTasks = localStorage.getItem('goalflow-tasks');
-      const savedTheme = localStorage.getItem('goalflow-theme');
       const savedStats = localStorage.getItem('goalflow-stats');
       
       if (savedTasks) {
         const parsedTasks = JSON.parse(savedTasks);
         setTasks(Array.isArray(parsedTasks) ? parsedTasks : []);
-      }
-      
-      if (savedTheme) {
-        setIsDarkMode(savedTheme === 'dark');
       }
 
       if (savedStats) {
@@ -59,7 +56,6 @@ const Dashboard = () => {
     } catch (error) {
       console.warn('Failed to load saved data:', error);
       localStorage.removeItem('goalflow-tasks');
-      localStorage.removeItem('goalflow-theme');
       localStorage.removeItem('goalflow-stats');
     }
   }, []);
@@ -188,11 +184,6 @@ const Dashboard = () => {
     }
   };
 
-  const toggleTheme = () => {
-    playClickSound();
-    setIsDarkMode(!isDarkMode);
-  };
-
   const todayTasks = tasks.filter(task => task.date === selectedDateString);
   const completedTasks = todayTasks.filter(task => task.completed);
   const completionRate = todayTasks.length > 0 ? Math.round((completedTasks.length / todayTasks.length) * 100) : 0;
@@ -213,10 +204,7 @@ const Dashboard = () => {
         ? "bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900" 
         : "bg-gradient-to-br from-blue-50 via-indigo-50 to-slate-100"
     )}>
-      <Header 
-        isDarkMode={isDarkMode} 
-        onToggleTheme={toggleTheme}
-      />
+      <Header />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         {/* Hero Section */}

@@ -11,8 +11,10 @@ import { Exercise } from '@/types/exercise';
 import { Search, Filter, Dumbbell, Sparkles } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
+import { useTheme } from '@/contexts/ThemeContext';
+
 const Exercises = () => {
-  const [isDarkMode, setIsDarkMode] = useState(true);
+  const { isDarkMode } = useTheme();
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all');
@@ -30,10 +32,6 @@ const Exercises = () => {
     });
   }, [searchTerm, selectedCategory, selectedDifficulty]);
 
-  const toggleTheme = () => {
-    setIsDarkMode(!isDarkMode);
-  };
-
   return (
     <div className={cn(
       "min-h-screen relative overflow-hidden transition-all duration-500 font-inter",
@@ -48,10 +46,7 @@ const Exercises = () => {
         <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl animate-float" />
       </div>
 
-      <Header 
-        isDarkMode={isDarkMode} 
-        onToggleTheme={toggleTheme}
-      />
+      <Header />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         {/* Hero Section */}

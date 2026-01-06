@@ -7,92 +7,92 @@
 
 @layer base {
   :root {
-    --background: 145 30% 97%;
-    --foreground: 160 25% 15%;
+    --background: 220 20% 96%;
+    --foreground: 220 25% 10%;
 
     --card: 0 0% 100%;
-    --card-foreground: 160 25% 15%;
+    --card-foreground: 220 25% 10%;
 
     --popover: 0 0% 100%;
-    --popover-foreground: 160 25% 15%;
+    --popover-foreground: 220 25% 10%;
 
-    --primary: 158 64% 40%;
+    --primary: 250 80% 60%;
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 160 20% 92%;
-    --secondary-foreground: 160 25% 15%;
+    --secondary: 220 20% 90%;
+    --secondary-foreground: 220 25% 10%;
 
-    --muted: 160 15% 93%;
-    --muted-foreground: 160 10% 45%;
+    --muted: 220 15% 92%;
+    --muted-foreground: 220 10% 40%;
 
-    --accent: 168 60% 45%;
+    --accent: 280 70% 55%;
     --accent-foreground: 0 0% 100%;
 
     --destructive: 0 84% 60%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 15% 85%;
-    --input: 160 15% 85%;
-    --ring: 158 64% 40%;
+    --border: 220 15% 85%;
+    --input: 220 15% 85%;
+    --ring: 250 80% 60%;
 
     --radius: 0.75rem;
 
-    --sidebar-background: 145 25% 96%;
-    --sidebar-foreground: 160 20% 25%;
-    --sidebar-primary: 158 64% 40%;
+    --sidebar-background: 220 20% 95%;
+    --sidebar-foreground: 220 20% 20%;
+    --sidebar-primary: 250 80% 60%;
     --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 160 15% 92%;
-    --sidebar-accent-foreground: 160 20% 20%;
-    --sidebar-border: 160 15% 88%;
-    --sidebar-ring: 158 64% 40%;
+    --sidebar-accent: 220 15% 90%;
+    --sidebar-accent-foreground: 220 20% 15%;
+    --sidebar-border: 220 15% 88%;
+    --sidebar-ring: 250 80% 60%;
 
     /* Custom timer colors */
-    --timer-work: 158 64% 45%;
-    --timer-break: 168 60% 45%;
+    --timer-work: 250 80% 55%;
+    --timer-break: 280 70% 55%;
     --timer-alarm: 0 84% 60%;
   }
 
   .dark {
-    --background: 160 30% 6%;
-    --foreground: 145 20% 95%;
+    --background: 230 25% 5%;
+    --foreground: 220 15% 95%;
 
-    --card: 160 25% 10%;
-    --card-foreground: 145 20% 95%;
+    --card: 230 25% 8%;
+    --card-foreground: 220 15% 95%;
 
-    --popover: 160 25% 10%;
-    --popover-foreground: 145 20% 95%;
+    --popover: 230 25% 8%;
+    --popover-foreground: 220 15% 95%;
 
-    --primary: 158 64% 50%;
-    --primary-foreground: 160 30% 6%;
+    --primary: 250 85% 65%;
+    --primary-foreground: 230 25% 5%;
 
-    --secondary: 160 20% 16%;
-    --secondary-foreground: 145 20% 95%;
+    --secondary: 230 20% 14%;
+    --secondary-foreground: 220 15% 95%;
 
-    --muted: 160 15% 18%;
-    --muted-foreground: 160 10% 60%;
+    --muted: 230 18% 16%;
+    --muted-foreground: 220 10% 55%;
 
-    --accent: 168 60% 50%;
-    --accent-foreground: 160 30% 6%;
+    --accent: 280 75% 60%;
+    --accent-foreground: 230 25% 5%;
 
     --destructive: 0 72% 50%;
     --destructive-foreground: 0 0% 100%;
 
-    --border: 160 15% 20%;
-    --input: 160 15% 20%;
-    --ring: 158 64% 50%;
+    --border: 230 18% 18%;
+    --input: 230 18% 18%;
+    --ring: 250 85% 65%;
 
-    --sidebar-background: 160 25% 8%;
-    --sidebar-foreground: 145 15% 90%;
-    --sidebar-primary: 158 64% 50%;
-    --sidebar-primary-foreground: 160 30% 6%;
-    --sidebar-accent: 160 15% 15%;
-    --sidebar-accent-foreground: 145 15% 95%;
-    --sidebar-border: 160 15% 15%;
-    --sidebar-ring: 158 64% 50%;
+    --sidebar-background: 230 25% 6%;
+    --sidebar-foreground: 220 12% 90%;
+    --sidebar-primary: 250 85% 65%;
+    --sidebar-primary-foreground: 230 25% 5%;
+    --sidebar-accent: 230 18% 12%;
+    --sidebar-accent-foreground: 220 12% 95%;
+    --sidebar-border: 230 18% 14%;
+    --sidebar-ring: 250 85% 65%;
 
     /* Custom timer colors - dark */
-    --timer-work: 158 64% 50%;
-    --timer-break: 168 60% 50%;
+    --timer-work: 250 85% 60%;
+    --timer-break: 280 75% 60%;
     --timer-alarm: 0 72% 55%;
   }
 }
@@ -149,5 +149,20 @@
 
   .glow-accent {
     box-shadow: 0 0 20px hsl(var(--accent) / 0.3), 0 0 40px hsl(var(--accent) / 0.15);
+  }
+
+  /* Chart carousel for mobile */
+  .chart-carousel {
+    @apply flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-4 px-4;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  .chart-carousel::-webkit-scrollbar {
+    display: none;
+  }
+  
+  .chart-carousel > * {
+    @apply snap-center shrink-0;
   }
 }
