@@ -39,7 +39,7 @@ const Pomodoro = () => {
   
   const [showSettings, setShowSettings] = useState(false);
   const { playClickSound } = useClickSound();
-  const { isDarkMode } = useTheme();
+  const { isDarkMode, toggleTheme } = useTheme();
 
   useEffect(() => {
     if (timeLeft === 25 * 60 && workTime !== 25) {
@@ -71,9 +71,9 @@ const Pomodoro = () => {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isAlarmRinging, stopAlarm, toggleTimer, resetTimer]);
 
-  const toggleTheme = () => {
+  const handleToggleTheme = () => {
     playClickSound();
-    setIsDarkMode(!isDarkMode);
+    toggleTheme();
   };
 
   const updateWorkTime = (minutes: number) => {
