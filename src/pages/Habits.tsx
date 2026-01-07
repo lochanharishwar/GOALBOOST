@@ -8,7 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import { Progress } from '@/components/ui/progress';
-import { Calendar, CheckCircle, Target, TrendingUp, Plus, Edit, Trash2, BookOpen } from 'lucide-react';
+import { Calendar, CheckCircle, Target, TrendingUp, Plus, Edit, Trash2, BookOpen, Flame, Zap, Sparkles, Award, Star } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useClickSound } from '@/utils/soundUtils';
 import { useToast } from '@/hooks/use-toast';
@@ -43,6 +43,7 @@ const Habits = () => {
   const { playClickSound } = useClickSound();
   const { toast } = useToast();
   const { isDarkMode } = useTheme();
+
   useEffect(() => {
     const savedHabits = localStorage.getItem('aspiraHabits');
     if (savedHabits) {
@@ -183,13 +184,38 @@ const Habits = () => {
     }
   };
 
-  const getCategoryColor = (category: string) => {
+  const getCategoryStyles = (category: string) => {
     switch (category) {
-      case 'health': return 'bg-green-500/20 border-green-400/30 text-green-400';
-      case 'productivity': return 'bg-blue-500/20 border-blue-400/30 text-blue-400';
-      case 'personal': return 'bg-purple-500/20 border-purple-400/30 text-purple-400';
-      case 'learning': return 'bg-orange-500/20 border-orange-400/30 text-orange-400';
-      default: return 'bg-gray-500/20 border-gray-400/30 text-gray-400';
+      case 'health': return {
+        badge: 'bg-success/20 border-success/40 text-success',
+        glow: 'hover:shadow-[0_0_30px_hsl(var(--success)/0.3)]',
+        border: 'border-success/30',
+        icon: 'text-success'
+      };
+      case 'productivity': return {
+        badge: 'bg-info/20 border-info/40 text-info',
+        glow: 'hover:shadow-[0_0_30px_hsl(var(--info)/0.3)]',
+        border: 'border-info/30',
+        icon: 'text-info'
+      };
+      case 'personal': return {
+        badge: 'bg-accent/20 border-accent/40 text-accent',
+        glow: 'hover:shadow-[0_0_30px_hsl(var(--accent)/0.3)]',
+        border: 'border-accent/30',
+        icon: 'text-accent'
+      };
+      case 'learning': return {
+        badge: 'bg-warning/20 border-warning/40 text-warning',
+        glow: 'hover:shadow-[0_0_30px_hsl(var(--warning)/0.3)]',
+        border: 'border-warning/30',
+        icon: 'text-warning'
+      };
+      default: return {
+        badge: 'bg-muted border-border text-muted-foreground',
+        glow: '',
+        border: 'border-border',
+        icon: 'text-muted-foreground'
+      };
     }
   };
 
@@ -204,75 +230,126 @@ const Habits = () => {
     return Math.min((thisWeekCompletions / habit.weeklyGoal) * 100, 100);
   };
 
+  const getStreakLevel = (streak: number) => {
+    if (streak >= 30) return { label: 'Legendary', color: 'text-warning', icon: Award };
+    if (streak >= 14) return { label: 'On Fire', color: 'text-destructive', icon: Flame };
+    if (streak >= 7) return { label: 'Consistent', color: 'text-success', icon: TrendingUp };
+    if (streak >= 3) return { label: 'Building', color: 'text-info', icon: Zap };
+    return { label: 'Starting', color: 'text-muted-foreground', icon: Star };
+  };
+
   const today = new Date().toISOString().split('T')[0];
+  const completedToday = habits.filter(h => h.completedDates.includes(today)).length;
+  const completionRate = habits.length > 0 ? Math.round((completedToday / habits.length) * 100) : 0;
 
   return (
     <div className={cn(
       "min-h-screen relative overflow-hidden transition-all duration-500",
-      isDarkMode 
-        ? "bg-gradient-to-br from-slate-900 via-purple-900 to-indigo-900" 
-        : "bg-gradient-to-br from-purple-50 via-indigo-50 to-slate-100"
+      "bg-background"
     )}>
+      {/* Background Effects */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-primary/10 rounded-full blur-3xl animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-accent/10 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-success/8 rounded-full blur-3xl animate-pulse" style={{ animationDelay: '2s' }} />
+      </div>
+
       <Header />
 
       <div className="relative max-w-7xl mx-auto px-6 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white mb-2">Habit Tracker</h1>
-          <p className="text-gray-300">Build better habits, one day at a time</p>
+        {/* Hero Section */}
+        <div className="mb-10">
+          <div className="flex items-center gap-3 mb-3">
+            <div className="p-3 rounded-2xl gradient-primary glow-primary">
+              <Sparkles className="h-8 w-8 text-primary-foreground" />
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-gradient tracking-tight">Habit Tracker</h1>
+              <p className="text-muted-foreground font-medium">Build better habits, one day at a time</p>
+            </div>
+          </div>
+          
+          {/* Completion Progress Bar */}
+          {habits.length > 0 && (
+            <div className="mt-6 glass-bold rounded-2xl p-4">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm font-semibold text-foreground">Today's Progress</span>
+                <span className="text-sm font-bold text-primary">{completedToday}/{habits.length} completed</span>
+              </div>
+              <div className="relative h-3 bg-muted rounded-full overflow-hidden">
+                <div 
+                  className="absolute inset-y-0 left-0 gradient-primary rounded-full transition-all duration-700 ease-out"
+                  style={{ width: `${completionRate}%` }}
+                />
+              </div>
+              {completionRate === 100 && (
+                <div className="flex items-center gap-2 mt-2 text-success">
+                  <Award className="h-4 w-4" />
+                  <span className="text-sm font-semibold">All habits completed! 🎉</span>
+                </div>
+              )}
+            </div>
+          )}
         </div>
 
         {/* Stats Overview */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card className="shadow-xl border-0 bg-black/40 backdrop-blur-xl border border-purple-500/20">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <Target className="h-8 w-8 text-purple-400" />
-                <div>
-                  <div className="text-2xl font-bold text-purple-400">{habits.length}</div>
-                  <div className="text-sm text-purple-300">Total Habits</div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+          <Card className="glass-bold hover-lift group overflow-hidden">
+            <CardContent className="p-5 relative">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-primary/10 rounded-full blur-2xl group-hover:bg-primary/20 transition-colors" />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-xl bg-primary/20">
+                    <Target className="h-5 w-5 text-primary" />
+                  </div>
                 </div>
+                <div className="stat-value text-primary">{habits.length}</div>
+                <div className="stat-label">Total Habits</div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-0 bg-black/40 backdrop-blur-xl border border-green-500/20">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <CheckCircle className="h-8 w-8 text-green-400" />
-                <div>
-                  <div className="text-2xl font-bold text-green-400">
-                    {habits.filter(h => h.completedDates.includes(today)).length}
+          <Card className="glass-bold hover-lift group overflow-hidden">
+            <CardContent className="p-5 relative">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-success/10 rounded-full blur-2xl group-hover:bg-success/20 transition-colors" />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-xl bg-success/20">
+                    <CheckCircle className="h-5 w-5 text-success" />
                   </div>
-                  <div className="text-sm text-green-300">Completed Today</div>
                 </div>
+                <div className="stat-value text-success">{completedToday}</div>
+                <div className="stat-label">Completed Today</div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-0 bg-black/40 backdrop-blur-xl border border-blue-500/20">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <TrendingUp className="h-8 w-8 text-blue-400" />
-                <div>
-                  <div className="text-2xl font-bold text-blue-400">
-                    {Math.max(...habits.map(h => h.streak), 0)}
+          <Card className="glass-bold hover-lift group overflow-hidden">
+            <CardContent className="p-5 relative">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-warning/10 rounded-full blur-2xl group-hover:bg-warning/20 transition-colors" />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-xl bg-warning/20">
+                    <Flame className="h-5 w-5 text-warning" />
                   </div>
-                  <div className="text-sm text-blue-300">Best Streak</div>
                 </div>
+                <div className="stat-value text-warning">{Math.max(...habits.map(h => h.streak), 0)}</div>
+                <div className="stat-label">Best Streak</div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="shadow-xl border-0 bg-black/40 backdrop-blur-xl border border-orange-500/20">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3">
-                <Calendar className="h-8 w-8 text-orange-400" />
-                <div>
-                  <div className="text-2xl font-bold text-orange-400">
-                    {habits.reduce((total, h) => total + h.completedDates.length, 0)}
+          <Card className="glass-bold hover-lift group overflow-hidden">
+            <CardContent className="p-5 relative">
+              <div className="absolute top-0 right-0 w-20 h-20 bg-accent/10 rounded-full blur-2xl group-hover:bg-accent/20 transition-colors" />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="p-2 rounded-xl bg-accent/20">
+                    <Calendar className="h-5 w-5 text-accent" />
                   </div>
-                  <div className="text-sm text-orange-300">Total Completions</div>
                 </div>
+                <div className="stat-value text-accent">{habits.reduce((total, h) => total + h.completedDates.length, 0)}</div>
+                <div className="stat-label">Total Completions</div>
               </div>
             </CardContent>
           </Card>
@@ -286,36 +363,39 @@ const Habits = () => {
               setShowForm(!showForm);
               if (showForm) resetForm();
             }}
-            className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white shadow-lg"
+            className="btn-bold gradient-primary text-primary-foreground glow-primary hover:scale-105 transition-transform"
+            size="lg"
           >
-            <Plus className="h-4 w-4 mr-2" />
+            <Plus className="h-5 w-5 mr-2" />
             {showForm ? 'Cancel' : 'Add New Habit'}
           </Button>
         </div>
 
         {/* Add/Edit Habit Form */}
         {showForm && (
-          <Card className="shadow-xl border-0 bg-black/40 backdrop-blur-xl border border-purple-500/20 mb-8">
+          <Card className="glass-bold border-2 border-primary/30 mb-8 animate-fade-in overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 gradient-primary" />
             <CardHeader>
-              <CardTitle className="text-white text-lg">
-                {editingHabit ? 'Edit Habit' : 'Add New Habit'}
+              <CardTitle className="text-foreground text-xl flex items-center gap-2">
+                <Sparkles className="h-5 w-5 text-primary" />
+                {editingHabit ? 'Edit Habit' : 'Create New Habit'}
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <CardContent className="space-y-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-white text-sm font-medium mb-2 block">Habit Name</label>
+                  <label className="text-foreground text-sm font-semibold mb-2 block">Habit Name</label>
                   <Input
                     value={newHabit.name}
                     onChange={(e) => setNewHabit({ ...newHabit, name: e.target.value })}
                     placeholder="e.g., Morning Exercise"
-                    className="bg-black/20 border-purple-400/30 text-white"
+                    className="bg-background/50 border-2 border-border focus:border-primary transition-colors"
                   />
                 </div>
                 <div>
-                  <label className="text-white text-sm font-medium mb-2 block">Category</label>
+                  <label className="text-foreground text-sm font-semibold mb-2 block">Category</label>
                   <Select value={newHabit.category} onValueChange={(value: 'health' | 'productivity' | 'personal' | 'learning') => setNewHabit({ ...newHabit, category: value })}>
-                    <SelectTrigger className="bg-black/20 border-purple-400/30 text-white">
+                    <SelectTrigger className="bg-background/50 border-2 border-border">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -329,20 +409,20 @@ const Habits = () => {
               </div>
 
               <div>
-                <label className="text-white text-sm font-medium mb-2 block">Description</label>
+                <label className="text-foreground text-sm font-semibold mb-2 block">Description</label>
                 <Textarea
                   value={newHabit.description}
                   onChange={(e) => setNewHabit({ ...newHabit, description: e.target.value })}
                   placeholder="Describe your habit..."
-                  className="bg-black/20 border-purple-400/30 text-white"
+                  className="bg-background/50 border-2 border-border focus:border-primary transition-colors"
                 />
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div>
-                  <label className="text-white text-sm font-medium mb-2 block">Frequency</label>
+                  <label className="text-foreground text-sm font-semibold mb-2 block">Frequency</label>
                   <Select value={newHabit.frequency} onValueChange={(value: 'daily' | 'weekly') => setNewHabit({ ...newHabit, frequency: value })}>
-                    <SelectTrigger className="bg-black/20 border-purple-400/30 text-white">
+                    <SelectTrigger className="bg-background/50 border-2 border-border">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -353,40 +433,40 @@ const Habits = () => {
                 </div>
                 {newHabit.frequency === 'weekly' && (
                   <div>
-                    <label className="text-white text-sm font-medium mb-2 block">Weekly Goal</label>
+                    <label className="text-foreground text-sm font-semibold mb-2 block">Weekly Goal</label>
                     <Input
                       type="number"
                       value={newHabit.weeklyGoal}
                       onChange={(e) => setNewHabit({ ...newHabit, weeklyGoal: parseInt(e.target.value) || 1 })}
                       min="1"
                       max="7"
-                      className="bg-black/20 border-purple-400/30 text-white"
+                      className="bg-background/50 border-2 border-border focus:border-primary transition-colors"
                     />
                   </div>
                 )}
               </div>
 
               <div>
-                <label className="text-white text-sm font-medium mb-2 block">Notes</label>
+                <label className="text-foreground text-sm font-semibold mb-2 block">Notes</label>
                 <Textarea
                   value={newHabit.notes}
                   onChange={(e) => setNewHabit({ ...newHabit, notes: e.target.value })}
                   placeholder="Additional notes or motivation..."
-                  className="bg-black/20 border-purple-400/30 text-white"
+                  className="bg-background/50 border-2 border-border focus:border-primary transition-colors"
                 />
               </div>
 
-              <div className="flex gap-3">
+              <div className="flex gap-3 pt-2">
                 <Button
                   onClick={editingHabit ? updateHabit : addHabit}
-                  className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
+                  className="btn-bold gradient-primary text-primary-foreground"
                 >
-                  {editingHabit ? 'Update Habit' : 'Add Habit'}
+                  {editingHabit ? 'Update Habit' : 'Create Habit'}
                 </Button>
                 <Button
                   onClick={resetForm}
                   variant="outline"
-                  className="border-purple-400/30 text-purple-300 hover:bg-purple-500/10"
+                  className="border-2 border-border hover:bg-muted"
                 >
                   Cancel
                 </Button>
@@ -397,22 +477,40 @@ const Habits = () => {
 
         {/* Habits List */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {habits.map((habit) => {
+          {habits.map((habit, index) => {
             const isCompletedToday = habit.completedDates.includes(today);
             const weeklyProgress = getWeeklyProgress(habit);
+            const styles = getCategoryStyles(habit.category);
+            const streakInfo = getStreakLevel(habit.streak);
+            const StreakIcon = streakInfo.icon;
 
             return (
               <Card
                 key={habit.id}
-                className="shadow-xl border-0 bg-black/40 backdrop-blur-xl border border-purple-500/20 transform hover:scale-[1.02] transition-all duration-300"
+                className={cn(
+                  "glass-bold overflow-hidden transition-all duration-300 hover:scale-[1.02]",
+                  styles.glow,
+                  styles.border,
+                  isCompletedToday && "ring-2 ring-success/50"
+                )}
+                style={{ animationDelay: `${index * 100}ms` }}
               >
+                {/* Top accent line */}
+                <div className={cn(
+                  "h-1 w-full",
+                  habit.category === 'health' && "bg-success",
+                  habit.category === 'productivity' && "bg-info",
+                  habit.category === 'personal' && "bg-accent",
+                  habit.category === 'learning' && "bg-warning"
+                )} />
+                
                 <CardHeader className="pb-3">
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">{getCategoryIcon(habit.category)}</span>
+                    <div className="flex items-center gap-3">
+                      <span className="text-3xl">{getCategoryIcon(habit.category)}</span>
                       <div>
-                        <CardTitle className="text-white text-lg">{habit.name}</CardTitle>
-                        <Badge className={`text-xs ${getCategoryColor(habit.category)}`}>
+                        <CardTitle className="text-foreground text-lg font-bold">{habit.name}</CardTitle>
+                        <Badge className={cn("text-xs border", styles.badge)}>
                           {habit.category.charAt(0).toUpperCase() + habit.category.slice(1)}
                         </Badge>
                       </div>
@@ -422,7 +520,7 @@ const Habits = () => {
                         size="sm"
                         variant="ghost"
                         onClick={() => startEditing(habit)}
-                        className="h-8 w-8 p-0 text-gray-400 hover:text-white hover:bg-white/10"
+                        className="h-8 w-8 p-0 text-muted-foreground hover:text-foreground hover:bg-muted"
                       >
                         <Edit className="h-4 w-4" />
                       </Button>
@@ -430,78 +528,100 @@ const Habits = () => {
                         size="sm"
                         variant="ghost"
                         onClick={() => deleteHabit(habit.id)}
-                        className="h-8 w-8 p-0 text-red-400 hover:text-red-300 hover:bg-red-500/10"
+                        className="h-8 w-8 p-0 text-destructive/70 hover:text-destructive hover:bg-destructive/10"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                 </CardHeader>
-                <CardContent>
+                <CardContent className="space-y-4">
                   {habit.description && (
-                    <p className="text-gray-300 text-sm mb-4">{habit.description}</p>
+                    <p className="text-muted-foreground text-sm leading-relaxed">{habit.description}</p>
                   )}
 
-                  <div className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <span className="text-gray-300 text-sm">Streak</span>
-                      <span className="text-orange-400 font-bold">{habit.streak} days</span>
+                  {/* Streak Display */}
+                  <div className="flex items-center justify-between p-3 rounded-xl bg-muted/50">
+                    <div className="flex items-center gap-2">
+                      <StreakIcon className={cn("h-5 w-5", streakInfo.color)} />
+                      <span className="text-sm font-medium text-muted-foreground">{streakInfo.label}</span>
                     </div>
-
-                    {habit.frequency === 'weekly' && habit.weeklyGoal && (
-                      <div className="space-y-2">
-                        <div className="flex items-center justify-between">
-                          <span className="text-gray-300 text-sm">Weekly Progress</span>
-                          <span className="text-blue-400 text-sm">{Math.round(weeklyProgress)}%</span>
-                        </div>
-                        <Progress value={weeklyProgress} className="h-2" />
-                      </div>
-                    )}
-
-                    {habit.notes && (
-                      <div className="space-y-1">
-                        <div className="flex items-center gap-1">
-                          <BookOpen className="h-3 w-3 text-gray-400" />
-                          <span className="text-gray-400 text-xs">Notes</span>
-                        </div>
-                        <p className="text-gray-300 text-xs bg-black/20 p-2 rounded">{habit.notes}</p>
-                      </div>
-                    )}
-
-                    <Button
-                      onClick={() => toggleHabitCompletion(habit.id)}
-                      className={cn(
-                        "w-full transition-all duration-300",
-                        isCompletedToday
-                          ? "bg-green-500 hover:bg-green-600 text-white"
-                          : "bg-gray-600 hover:bg-gray-500 text-white"
-                      )}
-                    >
-                      <CheckCircle className={cn("h-4 w-4 mr-2", isCompletedToday && "animate-pulse")} />
-                      {isCompletedToday ? 'Completed Today' : 'Mark Complete'}
-                    </Button>
+                    <div className="flex items-center gap-1">
+                      <Flame className={cn("h-4 w-4", habit.streak > 0 ? "text-warning" : "text-muted-foreground")} />
+                      <span className={cn("font-bold text-lg", habit.streak > 0 ? "text-warning" : "text-muted-foreground")}>
+                        {habit.streak}
+                      </span>
+                      <span className="text-xs text-muted-foreground">days</span>
+                    </div>
                   </div>
+
+                  {habit.frequency === 'weekly' && habit.weeklyGoal && (
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-sm">
+                        <span className="text-muted-foreground font-medium">Weekly Progress</span>
+                        <span className="text-info font-bold">{Math.round(weeklyProgress)}%</span>
+                      </div>
+                      <div className="relative h-2 bg-muted rounded-full overflow-hidden">
+                        <div 
+                          className="absolute inset-y-0 left-0 bg-info rounded-full transition-all duration-500"
+                          style={{ width: `${weeklyProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {habit.notes && (
+                    <div className="space-y-1">
+                      <div className="flex items-center gap-1">
+                        <BookOpen className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-muted-foreground text-xs font-medium">Notes</span>
+                      </div>
+                      <p className="text-muted-foreground text-xs bg-muted/50 p-2 rounded-lg">{habit.notes}</p>
+                    </div>
+                  )}
+
+                  <Button
+                    onClick={() => toggleHabitCompletion(habit.id)}
+                    className={cn(
+                      "w-full font-semibold transition-all duration-300",
+                      isCompletedToday
+                        ? "bg-success hover:bg-success/90 text-success-foreground glow-success"
+                        : "bg-muted hover:bg-muted/80 text-muted-foreground hover:text-foreground"
+                    )}
+                  >
+                    <CheckCircle className={cn("h-5 w-5 mr-2", isCompletedToday && "animate-pulse")} />
+                    {isCompletedToday ? 'Completed Today ✨' : 'Mark Complete'}
+                  </Button>
                 </CardContent>
               </Card>
             );
           })}
         </div>
 
+        {/* Empty State */}
         {habits.length === 0 && (
-          <Card className="shadow-xl border-0 bg-black/40 backdrop-blur-xl border border-purple-500/20">
-            <CardContent className="text-center py-12">
-              <Target className="h-16 w-16 text-purple-400 mx-auto mb-4" />
-              <h3 className="text-xl font-bold text-white mb-2">No Habits Yet</h3>
-              <p className="text-gray-300 mb-6">Start building better habits by adding your first one!</p>
+          <Card className="glass-bold border-2 border-dashed border-primary/30 animate-fade-in">
+            <CardContent className="text-center py-16">
+              <div className="relative inline-block mb-6">
+                <div className="absolute inset-0 bg-primary/20 rounded-full blur-2xl animate-pulse" />
+                <div className="relative p-4 rounded-full gradient-primary glow-primary">
+                  <Target className="h-12 w-12 text-primary-foreground" />
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-foreground mb-2">No Habits Yet</h3>
+              <p className="text-muted-foreground mb-8 max-w-md mx-auto">
+                Start building better habits today! Create your first habit and begin your journey to self-improvement.
+              </p>
               <Button
                 onClick={() => {
                   playClickSound();
                   setShowForm(true);
                 }}
-                className="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white"
+                className="btn-bold gradient-primary text-primary-foreground glow-primary hover:scale-105 transition-transform"
+                size="lg"
               >
-                <Plus className="h-4 w-4 mr-2" />
-                Add Your First Habit
+                <Plus className="h-5 w-5 mr-2" />
+                Create Your First Habit
               </Button>
             </CardContent>
           </Card>
