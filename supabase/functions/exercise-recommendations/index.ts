@@ -1,9 +1,38 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Input validation helpers
+const ALLOWED_FITNESS_LEVELS = ['beginner', 'intermediate', 'advanced'];
+const MAX_STRING_LENGTH = 200;
+const MAX_ARRAY_LENGTH = 20;
+const MAX_ARRAY_ITEM_LENGTH = 50;
+
+function sanitizeString(input: unknown, maxLength: number = MAX_STRING_LENGTH): string | null {
+  if (input === null || input === undefined) return null;
+  if (typeof input !== 'string') return null;
+  // Trim, limit length, and remove potentially dangerous characters for prompt injection
+  return input.trim().slice(0, maxLength).replace(/[<>{}[\]\\]/g, '');
+}
+
+function validateStringArray(input: unknown, maxItems: number = MAX_ARRAY_LENGTH, maxItemLength: number = MAX_ARRAY_ITEM_LENGTH): string[] {
+  if (!Array.isArray(input)) return [];
+  return input
+    .filter((item): item is string => typeof item === 'string')
+    .slice(0, maxItems)
+    .map(item => item.trim().slice(0, maxItemLength).replace(/[<>{}[\]\\]/g, ''))
+    .filter(item => item.length > 0);
+}
+
+function validateFitnessLevel(input: unknown): string {
+  if (typeof input !== 'string') return 'beginner';
+  const normalized = input.toLowerCase().trim();
+  return ALLOWED_FITNESS_LEVELS.includes(normalized) ? normalized : 'beginner';
+}
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
@@ -11,7 +40,54 @@ serve(async (req) => {
   }
 
   try {
-    const { preferences, fitnessLevel, goals, availableEquipment, targetMuscles } = await req.json();
+    // Authentication check
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Missing or invalid authorization header' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate the JWT token
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    
+    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader } }
+    });
+
+    const token = authHeader.replace('Bearer ', '');
+    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
+    
+    if (claimsError || !claimsData?.claims) {
+      console.error('JWT validation failed:', claimsError);
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized - Invalid token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const userId = claimsData.claims.sub;
+    console.log('Authenticated request from user:', userId);
+
+    // Parse and validate input
+    let rawBody;
+    try {
+      rawBody = await req.json();
+    } catch {
+      return new Response(
+        JSON.stringify({ error: 'Invalid JSON body' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Validate and sanitize all inputs
+    const fitnessLevel = validateFitnessLevel(rawBody.fitnessLevel);
+    const goals = sanitizeString(rawBody.goals, MAX_STRING_LENGTH) || 'General fitness';
+    const preferences = sanitizeString(rawBody.preferences, 500) || 'None';
+    const availableEquipment = validateStringArray(rawBody.availableEquipment);
+    const targetMuscles = validateStringArray(rawBody.targetMuscles, 10);
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
@@ -45,13 +121,13 @@ Exercise library IDs to match: push-ups, pull-ups, bench-press, dumbbell-rows, o
 Return 4-5 exercises. Use matchId only if exercise matches one from library.`;
 
     const userPrompt = `Create a workout plan:
-Level: ${fitnessLevel || 'beginner'}
-Goals: ${goals || 'General fitness'}
-Equipment: ${availableEquipment?.length > 0 ? availableEquipment.join(', ') : 'None'}
-Target: ${targetMuscles?.length > 0 ? targetMuscles.join(', ') : 'Full body'}
-Notes: ${preferences || 'None'}`;
+Level: ${fitnessLevel}
+Goals: ${goals}
+Equipment: ${availableEquipment.length > 0 ? availableEquipment.join(', ') : 'None'}
+Target: ${targetMuscles.length > 0 ? targetMuscles.join(', ') : 'Full body'}
+Notes: ${preferences}`;
 
-    console.log('Generating exercise recommendations for:', { fitnessLevel, goals });
+    console.log('Generating exercise recommendations for user:', userId, { fitnessLevel, goals });
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -103,7 +179,7 @@ Notes: ${preferences || 'None'}`;
       throw new Error('Failed to parse recommendations');
     }
 
-    console.log('Successfully generated structured recommendations');
+    console.log('Successfully generated structured recommendations for user:', userId);
 
     return new Response(
       JSON.stringify({ plan: parsedPlan }),
