@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2.39.3";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -34,6 +33,28 @@ function validateFitnessLevel(input: unknown): string {
   return ALLOWED_FITNESS_LEVELS.includes(normalized) ? normalized : 'beginner';
 }
 
+// Simple JWT validation - decode and verify with Supabase
+async function validateJWT(token: string, supabaseUrl: string, supabaseAnonKey: string): Promise<{ valid: boolean; userId?: string }> {
+  try {
+    // Call Supabase auth API to verify the token
+    const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'apikey': supabaseAnonKey,
+      },
+    });
+    
+    if (!response.ok) {
+      return { valid: false };
+    }
+    
+    const user = await response.json();
+    return { valid: true, userId: user.id };
+  } catch {
+    return { valid: false };
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -49,26 +70,21 @@ serve(async (req) => {
       );
     }
 
-    // Validate the JWT token
     const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
     const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    
-    const supabase = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader } }
-    });
-
     const token = authHeader.replace('Bearer ', '');
-    const { data: claimsData, error: claimsError } = await supabase.auth.getClaims(token);
     
-    if (claimsError || !claimsData?.claims) {
-      console.error('JWT validation failed:', claimsError);
+    // Validate the JWT token
+    const { valid, userId } = await validateJWT(token, supabaseUrl, supabaseAnonKey);
+    
+    if (!valid || !userId) {
+      console.error('JWT validation failed');
       return new Response(
         JSON.stringify({ error: 'Unauthorized - Invalid token' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const userId = claimsData.claims.sub;
     console.log('Authenticated request from user:', userId);
 
     // Parse and validate input
