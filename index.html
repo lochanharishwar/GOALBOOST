@@ -1,4 +1,3 @@
-
 <!doctype html>
 <html lang="en">
   <head>
@@ -10,12 +9,24 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <meta property="og:title" content="GoalFlow - Your Daily Productivity Companion">
-  <meta name="twitter:title" content="GoalFlow - Your Daily Productivity Companion">
-  <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/PtCcdXgHAVatnO1z0PFvqqwwHtM2/social-images/social-1758744096771-1000013516.png">
-  <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/PtCcdXgHAVatnO1z0PFvqqwwHtM2/social-images/social-1758744096771-1000013516.png">
-  <meta name="twitter:card" content="summary_large_image">
-  <meta property="og:type" content="website">
-</head>
+    <meta name="twitter:title" content="GoalFlow - Your Daily Productivity Companion">
+    <meta property="og:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/PtCcdXgHAVatnO1z0PFvqqwwHtM2/social-images/social-1758744096771-1000013516.png">
+    <meta name="twitter:image" content="https://storage.googleapis.com/gpt-engineer-file-uploads/PtCcdXgHAVatnO1z0PFvqqwwHtM2/social-images/social-1758744096771-1000013516.png">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta property="og:type" content="website">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <script>
+      // Register service worker for offline support
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+          navigator.serviceWorker.register('/sw.js')
+            .then(reg => console.log('SW registered'))
+            .catch(err => console.log('SW registration failed:', err));
+        });
+      }
+    </script>
+  </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>

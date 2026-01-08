@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useCallback } from 'react';
 import { Header } from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -7,11 +6,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
-import { Calendar, CheckCircle, Target, TrendingUp, Plus, Edit, Trash2, BookOpen, Flame, Zap, Sparkles, Award, Star, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Calendar, CheckCircle, Target, TrendingUp, Plus, Edit, Trash2, BookOpen, Flame, Zap, Sparkles, Award, Star, ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useClickSound } from '@/utils/soundUtils';
 import { useToast } from '@/hooks/use-toast';
 import { useTheme } from '@/contexts/ThemeContext';
+import { YearlyHeatmap } from '@/components/YearlyHeatmap';
 import confetti from 'canvas-confetti';
 
 interface Habit {
@@ -410,117 +411,142 @@ const Habits = () => {
           )}
         </div>
 
-        {/* Weekly Heatmap Calendar */}
+        {/* Heatmap Views */}
         {habits.length > 0 && (
-          <Card className="glass-bold border-2 border-accent/20 mb-8 overflow-hidden">
-            <div className="h-1.5 w-full bg-gradient-to-r from-success via-primary to-accent" />
-            <CardHeader className="pb-4">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-xl bg-accent/20">
-                    <Calendar className="h-6 w-6 text-accent" />
-                  </div>
-                  <div>
-                    <CardTitle className="text-xl font-bold text-foreground">Weekly Progress Heatmap</CardTitle>
-                    <p className="text-sm text-muted-foreground font-medium">{formatWeekRange()}</p>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setWeekOffset(weekOffset - 1)}
-                    className="h-9 w-9 p-0 border-2 hover:bg-accent/10"
-                  >
-                    <ChevronLeft className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setWeekOffset(0)}
-                    disabled={weekOffset === 0}
-                    className="border-2 hover:bg-accent/10 font-semibold"
-                  >
-                    Today
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setWeekOffset(weekOffset + 1)}
-                    disabled={weekOffset >= 0}
-                    className="h-9 w-9 p-0 border-2 hover:bg-accent/10"
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-7 gap-3">
-                {weekDates.map((date, index) => {
-                  const intensity = getHeatmapIntensity(date);
-                  const isToday = date === today;
-                  const completedCount = habits.filter(h => h.completedDates.includes(date)).length;
-                  
-                  return (
-                    <div
-                      key={date}
-                      className={cn(
-                        "relative flex flex-col items-center p-4 rounded-2xl transition-all duration-300 hover:scale-105",
-                        getHeatmapColor(intensity),
-                        isToday && "ring-2 ring-primary ring-offset-2 ring-offset-background"
-                      )}
-                    >
-                      <span className={cn(
-                        "text-xs font-bold uppercase tracking-wide mb-1",
-                        intensity > 50 ? "text-success-foreground" : "text-muted-foreground"
-                      )}>
-                        {dayNames[index]}
-                      </span>
-                      <span className={cn(
-                        "text-2xl font-black",
-                        intensity > 50 ? "text-success-foreground" : "text-foreground"
-                      )}>
-                        {new Date(date).getDate()}
-                      </span>
-                      <div className={cn(
-                        "mt-2 text-xs font-bold px-2 py-1 rounded-full",
-                        intensity === 100 ? "bg-success-foreground/20 text-success-foreground" : 
-                        intensity > 0 ? "bg-foreground/10 text-foreground" : "bg-muted text-muted-foreground"
-                      )}>
-                        {completedCount}/{habits.length}
+          <Tabs defaultValue="weekly" className="mb-8">
+            <TabsList className="glass-bold border-2 border-accent/20 p-1 h-auto">
+              <TabsTrigger 
+                value="weekly" 
+                className="data-[state=active]:bg-accent data-[state=active]:text-accent-foreground font-bold px-4 py-2"
+              >
+                <Calendar className="h-4 w-4 mr-2" />
+                Weekly View
+              </TabsTrigger>
+              <TabsTrigger 
+                value="yearly" 
+                className="data-[state=active]:bg-success data-[state=active]:text-success-foreground font-bold px-4 py-2"
+              >
+                <BarChart3 className="h-4 w-4 mr-2" />
+                Yearly Heatmap
+              </TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="weekly" className="mt-6">
+              <Card className="glass-bold border-2 border-accent/20 overflow-hidden">
+                <div className="h-1.5 w-full bg-gradient-to-r from-success via-primary to-accent" />
+                <CardHeader className="pb-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="p-2 rounded-xl bg-accent/20">
+                        <Calendar className="h-6 w-6 text-accent" />
                       </div>
-                      {intensity === 100 && (
-                        <div className="absolute -top-1 -right-1">
-                          <Star className="h-5 w-5 text-warning fill-warning animate-pulse" />
-                        </div>
-                      )}
+                      <div>
+                        <CardTitle className="text-xl font-bold text-foreground">Weekly Progress Heatmap</CardTitle>
+                        <p className="text-sm text-muted-foreground font-medium">{formatWeekRange()}</p>
+                      </div>
                     </div>
-                  );
-                })}
-              </div>
-              
-              {/* Legend */}
-              <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-border/50">
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-muted/50" />
-                  <span className="text-xs text-muted-foreground font-medium">No activity</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-success/20" />
-                  <span className="text-xs text-muted-foreground font-medium">Low</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-success/50" />
-                  <span className="text-xs text-muted-foreground font-medium">Medium</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 rounded bg-success" />
-                  <span className="text-xs text-muted-foreground font-medium">Complete</span>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                    <div className="flex items-center gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setWeekOffset(weekOffset - 1)}
+                        className="h-9 w-9 p-0 border-2 hover:bg-accent/10"
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setWeekOffset(0)}
+                        disabled={weekOffset === 0}
+                        className="border-2 hover:bg-accent/10 font-semibold"
+                      >
+                        Today
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setWeekOffset(weekOffset + 1)}
+                        disabled={weekOffset >= 0}
+                        className="h-9 w-9 p-0 border-2 hover:bg-accent/10"
+                      >
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                </CardHeader>
+                <CardContent>
+                  <div className="grid grid-cols-7 gap-3">
+                    {weekDates.map((date, index) => {
+                      const intensity = getHeatmapIntensity(date);
+                      const isToday = date === today;
+                      const completedCount = habits.filter(h => h.completedDates.includes(date)).length;
+                      
+                      return (
+                        <div
+                          key={date}
+                          className={cn(
+                            "relative flex flex-col items-center p-4 rounded-2xl transition-all duration-300 hover:scale-105",
+                            getHeatmapColor(intensity),
+                            isToday && "ring-2 ring-primary ring-offset-2 ring-offset-background"
+                          )}
+                        >
+                          <span className={cn(
+                            "text-xs font-bold uppercase tracking-wide mb-1",
+                            intensity > 50 ? "text-success-foreground" : "text-muted-foreground"
+                          )}>
+                            {dayNames[index]}
+                          </span>
+                          <span className={cn(
+                            "text-2xl font-black",
+                            intensity > 50 ? "text-success-foreground" : "text-foreground"
+                          )}>
+                            {new Date(date).getDate()}
+                          </span>
+                          <div className={cn(
+                            "mt-2 text-xs font-bold px-2 py-1 rounded-full",
+                            intensity === 100 ? "bg-success-foreground/20 text-success-foreground" : 
+                            intensity > 0 ? "bg-foreground/10 text-foreground" : "bg-muted text-muted-foreground"
+                          )}>
+                            {completedCount}/{habits.length}
+                          </div>
+                          {intensity === 100 && (
+                            <div className="absolute -top-1 -right-1">
+                              <Star className="h-5 w-5 text-warning fill-warning animate-pulse" />
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  
+                  {/* Legend */}
+                  <div className="flex items-center justify-center gap-6 mt-6 pt-4 border-t border-border/50">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded bg-muted/50" />
+                      <span className="text-xs text-muted-foreground font-medium">No activity</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded bg-success/20" />
+                      <span className="text-xs text-muted-foreground font-medium">Low</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded bg-success/50" />
+                      <span className="text-xs text-muted-foreground font-medium">Medium</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 rounded bg-success" />
+                      <span className="text-xs text-muted-foreground font-medium">Complete</span>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            
+            <TabsContent value="yearly" className="mt-6">
+              <YearlyHeatmap habits={habits} />
+            </TabsContent>
+          </Tabs>
         )}
 
         {/* Stats Overview */}

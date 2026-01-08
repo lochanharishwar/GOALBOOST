@@ -55,10 +55,21 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
       const saved = localStorage.getItem(TIMER_STORAGE_KEY);
       if (saved) {
         const state: TimerState = JSON.parse(saved);
+        // If timer was active, calculate elapsed time and continue from where left off
         if (state.isActive && state.lastUpdated) {
           const elapsed = Math.floor((Date.now() - state.lastUpdated) / 1000);
           const newTimeLeft = Math.max(0, state.timeLeft - elapsed);
-          return { ...state, timeLeft: newTimeLeft };
+          // Only return active state if there's still time left
+          if (newTimeLeft > 0) {
+            return { ...state, timeLeft: newTimeLeft, isActive: true };
+          } else {
+            // Timer completed while away, reset to appropriate mode time
+            return { 
+              ...state, 
+              timeLeft: state.mode === 'work' ? state.workTime * 60 : state.breakTime * 60, 
+              isActive: false 
+            };
+          }
         }
         return state;
       }
@@ -86,6 +97,7 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
   const alarmContextRef = useRef<AudioContext | null>(null);
   const alarmSourceRef = useRef<AudioBufferSourceNode | null>(null);
 
+  // Save state frequently with timestamp
   useEffect(() => {
     try {
       const state: TimerState = {
@@ -102,6 +114,57 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
     } catch (error) {
       console.warn('Failed to save timer state:', error);
     }
+  }, [timeLeft, isActive, mode, workTime, breakTime, isPiPActive, alarmSound]);
+
+  // Save state on visibility change (when user navigates away)
+  useEffect(() => {
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'hidden') {
+        try {
+          const state: TimerState = {
+            timeLeft,
+            isActive,
+            mode,
+            workTime,
+            breakTime,
+            isPiPActive,
+            alarmSound,
+            lastUpdated: Date.now()
+          };
+          localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(state));
+        } catch (error) {
+          console.warn('Failed to save timer state on visibility change:', error);
+        }
+      }
+    };
+
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    // Also save on page unload
+    const handleBeforeUnload = () => {
+      try {
+        const state: TimerState = {
+          timeLeft,
+          isActive,
+          mode,
+          workTime,
+          breakTime,
+          isPiPActive,
+          alarmSound,
+          lastUpdated: Date.now()
+        };
+        localStorage.setItem(TIMER_STORAGE_KEY, JSON.stringify(state));
+      } catch (error) {
+        console.warn('Failed to save timer state on unload:', error);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
   }, [timeLeft, isActive, mode, workTime, breakTime, isPiPActive, alarmSound]);
 
   const createAlarmBuffer = useCallback((ctx: AudioContext, type: AlarmSound): AudioBuffer => {

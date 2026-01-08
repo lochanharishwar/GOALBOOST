@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { format, startOfWeek, addDays } from 'date-fns';
 import { Header } from '@/components/Header';
@@ -6,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Calendar } from '@/components/ui/calendar';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
-import { CalendarIcon, Award } from 'lucide-react';
+import { CalendarIcon, Award, Target, TrendingUp, Sparkles, Flame, Zap, Star } from 'lucide-react';
 import { GoalCard } from '@/components/GoalCard';
 import { StatsCard } from '@/components/StatsCard';
 import { StreakTracker } from '@/components/StreakTracker';
@@ -16,7 +15,6 @@ import { useToast } from '@/hooks/use-toast';
 import { cn } from '@/lib/utils';
 import { useClickSound } from '@/utils/soundUtils';
 import { checkForNewAchievements, calculateStreak } from '@/utils/achievementUtils';
-
 import { useTheme } from '@/contexts/ThemeContext';
 
 const Dashboard = () => {
@@ -200,59 +198,156 @@ const Dashboard = () => {
   return (
     <div className={cn(
       "min-h-screen relative overflow-hidden transition-all duration-500 font-inter",
-      isDarkMode 
-        ? "bg-gradient-to-br from-slate-900 via-blue-900 to-indigo-900" 
-        : "bg-gradient-to-br from-blue-50 via-indigo-50 to-slate-100"
+      "bg-background"
     )}>
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-[600px] h-[600px] bg-primary/20 rounded-full blur-[120px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-accent/15 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 left-1/2 w-[400px] h-[400px] bg-success/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-0 right-0 w-[300px] h-[300px] bg-warning/10 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '3s' }} />
+      </div>
+
       <Header />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
         {/* Hero Section */}
-        <div className="mb-8 sm:mb-12 text-center">
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-3 sm:mb-4 font-inter">
-            Welcome to GoalFlow
-          </h1>
-          <p className="text-gray-300 text-base sm:text-lg lg:text-xl font-inter max-w-2xl mx-auto">
-            Transform your daily routine into meaningful achievements
-          </p>
+        <div className="mb-10 sm:mb-14">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary/30 rounded-2xl blur-xl animate-pulse" />
+              <div className="relative p-4 rounded-2xl gradient-primary glow-primary">
+                <Sparkles className="h-10 w-10 text-primary-foreground" />
+              </div>
+            </div>
+            <div>
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black text-gradient tracking-tight">
+                GoalFlow
+              </h1>
+              <p className="text-muted-foreground text-lg sm:text-xl font-semibold">
+                Transform your daily routine into meaningful achievements
+              </p>
+            </div>
+          </div>
         </div>
 
-        {/* Enhanced Stats Cards with Better Spacing */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-12">
-          <StatsCard
-            title="Today's Progress"
-            value={completionRate}
-            suffix="%"
-            description={`${completedTasks.length}/${todayTasks.length} goals completed`}
-            isDarkMode={isDarkMode}
-          />
-          <StatsCard
-            title="This Week"
-            value={weekCompleted}
-            suffix=" goals"
-            description="Weekly achievements"
-            isDarkMode={isDarkMode}
-          />
-          <StatsCard
-            title="Total Completed"
-            value={allCompletedTasks}
-            suffix=" goals"
-            description="All-time achievements"
-            isDarkMode={isDarkMode}
-          />
+        {/* Enhanced Stats Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 lg:gap-8 mb-10 sm:mb-14">
+          <Card className="glass-bold hover-lift group overflow-hidden border-2 border-primary/30">
+            <div className="h-1.5 w-full bg-gradient-to-r from-primary to-primary/50" />
+            <CardContent className="p-6 relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-2xl group-hover:bg-primary/30 transition-colors" />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-3 rounded-xl bg-primary/20 group-hover:scale-110 transition-transform">
+                    <Target className="h-7 w-7 text-primary" />
+                  </div>
+                  <span className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Today's Progress</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-black text-primary">{completionRate}</span>
+                  <span className="text-2xl font-bold text-muted-foreground">%</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2 font-medium">
+                  {completedTasks.length}/{todayTasks.length} goals completed
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-bold hover-lift group overflow-hidden border-2 border-success/30">
+            <div className="h-1.5 w-full bg-gradient-to-r from-success to-success/50" />
+            <CardContent className="p-6 relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-success/20 rounded-full blur-2xl group-hover:bg-success/30 transition-colors" />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-3 rounded-xl bg-success/20 group-hover:scale-110 transition-transform">
+                    <TrendingUp className="h-7 w-7 text-success" />
+                  </div>
+                  <span className="text-sm font-bold text-muted-foreground uppercase tracking-wide">This Week</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-black text-success">{weekCompleted}</span>
+                  <span className="text-lg font-bold text-muted-foreground">goals</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2 font-medium">
+                  Weekly achievements
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card className="glass-bold hover-lift group overflow-hidden border-2 border-warning/30 sm:col-span-2 lg:col-span-1">
+            <div className="h-1.5 w-full bg-gradient-to-r from-warning to-warning/50" />
+            <CardContent className="p-6 relative">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-warning/20 rounded-full blur-2xl group-hover:bg-warning/30 transition-colors" />
+              <div className="relative">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="p-3 rounded-xl bg-warning/20 group-hover:scale-110 transition-transform">
+                    <Award className="h-7 w-7 text-warning" />
+                  </div>
+                  <span className="text-sm font-bold text-muted-foreground uppercase tracking-wide">Total Completed</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-5xl font-black text-warning">{allCompletedTasks}</span>
+                  <span className="text-lg font-bold text-muted-foreground">goals</span>
+                </div>
+                <p className="text-sm text-muted-foreground mt-2 font-medium">
+                  All-time achievements
+                </p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Streak Tracker and Recent Achievements */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8 mb-10">
           <div className="lg:col-span-2">
-            <StreakTracker stats={userStats} isDarkMode={isDarkMode} />
+            <Card className="glass-bold border-2 border-accent/30 overflow-hidden h-full">
+              <div className="h-1.5 w-full bg-gradient-to-r from-accent via-primary to-success" />
+              <CardHeader className="pb-4">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-xl bg-accent/20">
+                    <Flame className="h-6 w-6 text-accent" />
+                  </div>
+                  <CardTitle className="text-xl font-bold text-foreground">Streak Tracker</CardTitle>
+                </div>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="p-6 rounded-2xl bg-gradient-to-br from-warning/10 to-warning/5 border border-warning/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Flame className="h-6 w-6 text-warning" />
+                      <span className="text-sm font-bold text-muted-foreground">Current Streak</span>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-black text-warning">{userStats.currentStreak}</span>
+                      <span className="text-lg font-bold text-muted-foreground">days</span>
+                    </div>
+                  </div>
+                  <div className="p-6 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20">
+                    <div className="flex items-center gap-2 mb-2">
+                      <Star className="h-6 w-6 text-primary" />
+                      <span className="text-sm font-bold text-muted-foreground">Best Streak</span>
+                    </div>
+                    <div className="flex items-baseline gap-2">
+                      <span className="text-5xl font-black text-primary">{userStats.longestStreak}</span>
+                      <span className="text-lg font-bold text-muted-foreground">days</span>
+                    </div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
           
           <div className="lg:col-span-1">
-            <Card className="shadow-2xl border-0 bg-black/20 backdrop-blur-xl border border-purple-500/20">
+            <Card className="glass-bold border-2 border-accent/30 overflow-hidden h-full">
+              <div className="h-1.5 w-full bg-gradient-to-r from-accent to-primary" />
               <CardHeader className="pb-4">
-                <CardTitle className="text-white text-lg flex items-center gap-2">
-                  <Award className="h-5 w-5 text-purple-400" />
+                <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+                  <div className="p-2 rounded-xl bg-accent/20">
+                    <Award className="h-5 w-5 text-accent" />
+                  </div>
                   Achievements
                 </CardTitle>
               </CardHeader>
@@ -268,9 +363,11 @@ const Dashboard = () => {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-6">
-                    <div className="text-4xl mb-2">🏆</div>
-                    <p className="text-gray-300 text-sm">
+                  <div className="text-center py-8">
+                    <div className="w-16 h-16 rounded-2xl bg-accent/20 flex items-center justify-center mx-auto mb-4">
+                      <Award className="h-8 w-8 text-accent" />
+                    </div>
+                    <p className="text-muted-foreground text-sm font-medium">
                       Complete goals to unlock achievements!
                     </p>
                   </div>
@@ -282,12 +379,15 @@ const Dashboard = () => {
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8">
-          {/* Date Selector - Enhanced Mobile Layout */}
+          {/* Date Selector */}
           <div className="lg:col-span-1">
-            <Card className="shadow-2xl border-0 bg-black/20 backdrop-blur-xl border border-blue-500/20 font-inter">
+            <Card className="glass-bold border-2 border-info/30 overflow-hidden font-inter">
+              <div className="h-1.5 w-full bg-gradient-to-r from-info to-info/50" />
               <CardHeader className="pb-4">
-                <CardTitle className="text-white text-lg flex items-center gap-2 font-inter">
-                  <CalendarIcon className="h-5 w-5" />
+                <CardTitle className="text-lg font-bold text-foreground flex items-center gap-2">
+                  <div className="p-2 rounded-xl bg-info/20">
+                    <CalendarIcon className="h-5 w-5 text-info" />
+                  </div>
                   Select Date
                 </CardTitle>
               </CardHeader>
@@ -297,15 +397,15 @@ const Dashboard = () => {
                     <Button
                       variant="outline"
                       className={cn(
-                        "w-full justify-start text-left font-normal bg-black/30 border-blue-400/30 text-white hover:bg-black/40 h-12 font-inter",
-                        !selectedDate && "text-gray-400"
+                        "w-full justify-start text-left font-semibold bg-background/50 border-2 border-border hover:border-info/50 hover:bg-info/5 h-12 transition-all",
+                        !selectedDate && "text-muted-foreground"
                       )}
                     >
-                      <CalendarIcon className="mr-2 h-4 w-4" />
+                      <CalendarIcon className="mr-2 h-4 w-4 text-info" />
                       {selectedDate ? format(selectedDate, "PPP") : "Pick a date"}
                     </Button>
                   </PopoverTrigger>
-                  <PopoverContent className="w-auto p-0 bg-black/90 border-blue-500/30" align="start">
+                  <PopoverContent className="w-auto p-0 bg-background/95 backdrop-blur-xl border-2 border-info/30" align="start">
                     <Calendar
                       mode="single"
                       selected={selectedDate}
@@ -323,14 +423,14 @@ const Dashboard = () => {
                 </Popover>
                 
                 {/* Enhanced Date Display */}
-                <div className="mt-6 text-center p-4 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-xl border border-blue-400/20">
-                  <p className="text-gray-300 text-sm font-inter mb-1">
+                <div className="mt-6 text-center p-5 bg-gradient-to-br from-info/10 to-info/5 rounded-2xl border-2 border-info/20">
+                  <p className="text-muted-foreground text-sm font-bold mb-1">
                     Planning for:
                   </p>
-                  <p className="text-white font-semibold font-inter text-lg">
+                  <p className="text-foreground font-black text-xl">
                     {format(selectedDate, 'EEEE')}
                   </p>
-                  <p className="text-blue-300 font-medium font-inter">
+                  <p className="text-info font-bold">
                     {format(selectedDate, 'MMMM dd, yyyy')}
                   </p>
                 </div>
@@ -338,7 +438,7 @@ const Dashboard = () => {
             </Card>
           </div>
 
-          {/* Goals Section - Enhanced for Mobile */}
+          {/* Goals Section */}
           <div className="lg:col-span-3">
             <GoalCard
               tasks={tasks}
@@ -363,10 +463,10 @@ const Dashboard = () => {
 
         {/* Motivational Footer */}
         {completionRate === 100 && todayTasks.length > 0 && (
-          <div className="mt-8 sm:mt-12 text-center">
-            <div className="inline-flex items-center gap-2 bg-gradient-to-r from-green-500/20 to-blue-500/20 backdrop-blur-xl rounded-full px-6 py-3 border border-green-400/30">
-              <span className="text-2xl">🎉</span>
-              <p className="text-white font-semibold font-inter">
+          <div className="mt-10 sm:mt-14 text-center">
+            <div className="inline-flex items-center gap-3 glass-bold rounded-full px-8 py-4 border-2 border-success/30 glow-success">
+              <span className="text-3xl">🎉</span>
+              <p className="text-foreground font-bold text-lg">
                 Amazing! You've completed all your goals for today!
               </p>
             </div>

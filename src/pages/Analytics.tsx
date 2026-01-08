@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from 'react';
 import { Header } from '@/components/Header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, PieChart, Pie, Cell, CartesianGrid, Area, AreaChart, Tooltip } from 'recharts';
-import { Calendar, TrendingUp, Target, Award, CheckCircle, Zap, ArrowUpRight, ArrowDownRight, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Calendar, TrendingUp, Target, Award, CheckCircle, Zap, ArrowUpRight, ArrowDownRight, Lightbulb, Sparkles, Star, Brain } from 'lucide-react';
 import { Task } from '@/types/task';
 import { format, subDays } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -99,71 +99,78 @@ const Analytics = () => {
   return (
     <div className={cn(
       "min-h-screen relative overflow-hidden transition-all duration-500",
-      isDarkMode 
-        ? "bg-gradient-to-br from-slate-950 via-purple-950 to-slate-950" 
-        : "bg-gradient-to-br from-purple-50 via-blue-50 to-slate-100"
+      "bg-background"
     )}>
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse-slow" />
-        <div className="absolute bottom-1/4 right-1/4 w-80 h-80 bg-blue-500/10 rounded-full blur-3xl animate-pulse-slow" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/4 left-1/4 w-[500px] h-[500px] bg-primary/15 rounded-full blur-[100px] animate-pulse" />
+        <div className="absolute bottom-1/4 right-1/4 w-[400px] h-[400px] bg-accent/15 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute top-1/2 right-1/4 w-[300px] h-[300px] bg-success/10 rounded-full blur-[80px] animate-pulse" style={{ animationDelay: '2s' }} />
       </div>
 
       <Header />
 
       <div className="relative max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Page Header */}
-        <div className="mb-6 sm:mb-8 animate-fade-in">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-purple-500/30 to-blue-500/30 border border-purple-400/30">
-              <TrendingUp className="h-5 w-5 sm:h-6 sm:w-6 text-purple-300" />
+        <div className="mb-8 sm:mb-10 animate-fade-in">
+          <div className="flex items-center gap-4 mb-4">
+            <div className="relative">
+              <div className="absolute inset-0 bg-primary/30 rounded-2xl blur-xl animate-pulse" />
+              <div className="relative p-4 rounded-2xl gradient-primary glow-primary">
+                <TrendingUp className="h-8 w-8 text-primary-foreground" />
+              </div>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground">Analytics Dashboard</h1>
+            <div>
+              <h1 className="text-3xl sm:text-4xl lg:text-5xl font-black text-gradient tracking-tight">Analytics Dashboard</h1>
+              <p className="text-muted-foreground text-base sm:text-lg font-semibold">Track your productivity and goal completion trends</p>
+            </div>
           </div>
-          <p className="text-muted-foreground text-sm sm:text-base ml-14">Track your productivity and goal completion trends</p>
         </div>
 
         {/* Key Metrics */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
-          <Card className="bg-gradient-to-br from-blue-500/20 to-blue-600/10 backdrop-blur-xl border-blue-500/30 border overflow-hidden group hover:border-blue-400/50 transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-8 sm:mb-10">
+          <Card className="glass-bold hover-lift group overflow-hidden border-2 border-info/30 animate-fade-in" style={{ animationDelay: '0.1s' }}>
+            <div className="h-1.5 w-full bg-gradient-to-r from-info to-info/50" />
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-muted-foreground text-xs sm:text-sm">Total Goals</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-foreground mt-1">{totalTasks}</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm font-bold">Total Goals</p>
+                  <p className="text-3xl sm:text-4xl font-black text-info mt-1">{totalTasks}</p>
                 </div>
-                <div className="p-2 sm:p-3 rounded-xl bg-blue-500/20 group-hover:bg-blue-500/30 transition-colors">
-                  <Target className="h-5 w-5 sm:h-6 sm:w-6 text-blue-400" />
+                <div className="p-2 sm:p-3 rounded-xl bg-info/20 group-hover:scale-110 transition-transform">
+                  <Target className="h-5 w-5 sm:h-6 sm:w-6 text-info" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-green-500/20 to-emerald-600/10 backdrop-blur-xl border-green-500/30 border overflow-hidden group hover:border-green-400/50 transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+          <Card className="glass-bold hover-lift group overflow-hidden border-2 border-success/30 animate-fade-in" style={{ animationDelay: '0.2s' }}>
+            <div className="h-1.5 w-full bg-gradient-to-r from-success to-success/50" />
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-muted-foreground text-xs sm:text-sm">Completed</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-foreground mt-1">{completedTasks}</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm font-bold">Completed</p>
+                  <p className="text-3xl sm:text-4xl font-black text-success mt-1">{completedTasks}</p>
                 </div>
-                <div className="p-2 sm:p-3 rounded-xl bg-green-500/20 group-hover:bg-green-500/30 transition-colors">
-                  <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-green-400" />
+                <div className="p-2 sm:p-3 rounded-xl bg-success/20 group-hover:scale-110 transition-transform">
+                  <CheckCircle className="h-5 w-5 sm:h-6 sm:w-6 text-success" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-purple-500/20 to-violet-600/10 backdrop-blur-xl border-purple-500/30 border overflow-hidden group hover:border-purple-400/50 transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+          <Card className="glass-bold hover-lift group overflow-hidden border-2 border-primary/30 animate-fade-in" style={{ animationDelay: '0.3s' }}>
+            <div className="h-1.5 w-full bg-gradient-to-r from-primary to-primary/50" />
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-muted-foreground text-xs sm:text-sm">Success Rate</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm font-bold">Success Rate</p>
                   <div className="flex items-center gap-2 mt-1">
-                    <p className="text-2xl sm:text-3xl font-bold text-foreground">{completionRate}%</p>
+                    <p className="text-3xl sm:text-4xl font-black text-primary">{completionRate}%</p>
                     {trend !== 0 && (
                       <span className={cn(
-                        "text-xs flex items-center gap-0.5 px-1.5 py-0.5 rounded-full",
-                        trend > 0 ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                        "text-xs flex items-center gap-0.5 px-2 py-1 rounded-full font-bold",
+                        trend > 0 ? "bg-success/20 text-success" : "bg-destructive/20 text-destructive"
                       )}>
                         {trend > 0 ? <ArrowUpRight className="h-3 w-3" /> : <ArrowDownRight className="h-3 w-3" />}
                         {Math.abs(Math.round(trend))}%
@@ -171,22 +178,23 @@ const Analytics = () => {
                     )}
                   </div>
                 </div>
-                <div className="p-2 sm:p-3 rounded-xl bg-purple-500/20 group-hover:bg-purple-500/30 transition-colors">
-                  <Award className="h-5 w-5 sm:h-6 sm:w-6 text-purple-400" />
+                <div className="p-2 sm:p-3 rounded-xl bg-primary/20 group-hover:scale-110 transition-transform">
+                  <Award className="h-5 w-5 sm:h-6 sm:w-6 text-primary" />
                 </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-amber-500/20 to-orange-600/10 backdrop-blur-xl border-amber-500/30 border overflow-hidden group hover:border-amber-400/50 transition-all duration-300 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+          <Card className="glass-bold hover-lift group overflow-hidden border-2 border-warning/30 animate-fade-in" style={{ animationDelay: '0.4s' }}>
+            <div className="h-1.5 w-full bg-gradient-to-r from-warning to-warning/50" />
             <CardContent className="p-4 sm:p-6">
               <div className="flex items-start justify-between">
                 <div>
-                  <p className="text-muted-foreground text-xs sm:text-sm">Urgent Goals</p>
-                  <p className="text-2xl sm:text-3xl font-bold text-foreground mt-1">{urgentTasks}</p>
+                  <p className="text-muted-foreground text-xs sm:text-sm font-bold">Urgent Goals</p>
+                  <p className="text-3xl sm:text-4xl font-black text-warning mt-1">{urgentTasks}</p>
                 </div>
-                <div className="p-2 sm:p-3 rounded-xl bg-amber-500/20 group-hover:bg-amber-500/30 transition-colors">
-                  <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-amber-400" />
+                <div className="p-2 sm:p-3 rounded-xl bg-warning/20 group-hover:scale-110 transition-transform">
+                  <Zap className="h-5 w-5 sm:h-6 sm:w-6 text-warning" />
                 </div>
               </div>
             </CardContent>
@@ -194,12 +202,15 @@ const Analytics = () => {
         </div>
 
         {/* Charts Grid */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-6 sm:mb-8">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-8 mb-8 sm:mb-10">
           {/* Weekly Progress Chart */}
-          <Card className="bg-gradient-to-br from-black/40 to-blue-900/20 backdrop-blur-xl border-blue-500/20 border overflow-hidden animate-fade-in" style={{ animationDelay: '0.5s' }}>
+          <Card className="glass-bold border-2 border-info/30 overflow-hidden animate-fade-in" style={{ animationDelay: '0.5s' }}>
+            <div className="h-1.5 w-full bg-gradient-to-r from-info via-primary to-success" />
             <CardHeader className="pb-2">
-              <CardTitle className="text-foreground flex items-center gap-2 text-base sm:text-lg">
-                <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-blue-400" />
+              <CardTitle className="text-foreground flex items-center gap-3 text-base sm:text-lg font-bold">
+                <div className="p-2 rounded-xl bg-info/20">
+                  <TrendingUp className="h-5 w-5 text-info" />
+                </div>
                 Weekly Progress
               </CardTitle>
             </CardHeader>
@@ -207,7 +218,7 @@ const Analytics = () => {
               <div className="w-full h-[200px] sm:h-[250px] lg:h-[280px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={last7Days} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                     <XAxis 
                       dataKey="date" 
                       axisLine={false}
@@ -220,16 +231,16 @@ const Analytics = () => {
                       tick={{ fill: 'hsl(var(--muted-foreground))', fontSize: 11 }}
                     />
                     <Tooltip 
-                      cursor={{ fill: 'rgba(255,255,255,0.05)' }}
+                      cursor={{ fill: 'hsl(var(--muted) / 0.3)' }}
                       contentStyle={{ 
                         backgroundColor: 'hsl(var(--background))', 
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px',
+                        border: '2px solid hsl(var(--border))',
+                        borderRadius: '12px',
                         color: 'hsl(var(--foreground))'
                       }}
                     />
-                    <Bar dataKey="tasks" fill="#3b82f6" radius={[4, 4, 0, 0]} name="Total" />
-                    <Bar dataKey="completed" fill="#10b981" radius={[4, 4, 0, 0]} name="Completed" />
+                    <Bar dataKey="tasks" fill="hsl(var(--info))" radius={[4, 4, 0, 0]} name="Total" />
+                    <Bar dataKey="completed" fill="hsl(var(--success))" radius={[4, 4, 0, 0]} name="Completed" />
                   </BarChart>
                 </ResponsiveContainer>
               </div>
@@ -237,10 +248,13 @@ const Analytics = () => {
           </Card>
 
           {/* Priority Distribution */}
-          <Card className="bg-gradient-to-br from-black/40 to-purple-900/20 backdrop-blur-xl border-purple-500/20 border overflow-hidden animate-fade-in" style={{ animationDelay: '0.6s' }}>
+          <Card className="glass-bold border-2 border-primary/30 overflow-hidden animate-fade-in" style={{ animationDelay: '0.6s' }}>
+            <div className="h-1.5 w-full bg-gradient-to-r from-primary via-accent to-warning" />
             <CardHeader className="pb-2">
-              <CardTitle className="text-foreground flex items-center gap-2 text-base sm:text-lg">
-                <Target className="h-4 w-4 sm:h-5 sm:w-5 text-purple-400" />
+              <CardTitle className="text-foreground flex items-center gap-3 text-base sm:text-lg font-bold">
+                <div className="p-2 rounded-xl bg-primary/20">
+                  <Target className="h-5 w-5 text-primary" />
+                </div>
                 Goal Priority Distribution
               </CardTitle>
             </CardHeader>
@@ -267,8 +281,8 @@ const Analytics = () => {
                       <Tooltip 
                         contentStyle={{ 
                           backgroundColor: 'hsl(var(--background))', 
-                          border: '1px solid hsl(var(--border))',
-                          borderRadius: '8px',
+                          border: '2px solid hsl(var(--border))',
+                          borderRadius: '12px',
                           color: 'hsl(var(--foreground))'
                         }}
                       />
@@ -277,7 +291,7 @@ const Analytics = () => {
                 ) : (
                   <div className="text-center text-muted-foreground">
                     <Target className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                    <p className="text-sm">No goals data available</p>
+                    <p className="text-sm font-medium">No goals data available</p>
                   </div>
                 )}
               </div>
@@ -287,7 +301,7 @@ const Analytics = () => {
                   {priorityData.map((item) => (
                     <div key={item.name} className="flex items-center gap-1.5">
                       <div className="w-3 h-3 rounded-full" style={{ backgroundColor: item.color }} />
-                      <span className="text-xs text-muted-foreground">{item.name}</span>
+                      <span className="text-xs text-muted-foreground font-medium">{item.name}</span>
                     </div>
                   ))}
                 </div>
@@ -297,10 +311,13 @@ const Analytics = () => {
         </div>
 
         {/* Completion Rate Trend */}
-        <Card className="bg-gradient-to-br from-black/40 to-green-900/20 backdrop-blur-xl border-green-500/20 border overflow-hidden mb-6 sm:mb-8 animate-fade-in" style={{ animationDelay: '0.7s' }}>
+        <Card className="glass-bold border-2 border-success/30 overflow-hidden mb-8 sm:mb-10 animate-fade-in" style={{ animationDelay: '0.7s' }}>
+          <div className="h-1.5 w-full bg-gradient-to-r from-success via-success to-primary" />
           <CardHeader className="pb-2">
-            <CardTitle className="text-foreground flex items-center gap-2 text-base sm:text-lg">
-              <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-green-400" />
+            <CardTitle className="text-foreground flex items-center gap-3 text-base sm:text-lg font-bold">
+              <div className="p-2 rounded-xl bg-success/20">
+                <Calendar className="h-5 w-5 text-success" />
+              </div>
               Completion Rate Trend
             </CardTitle>
           </CardHeader>
@@ -310,11 +327,11 @@ const Analytics = () => {
                 <AreaChart data={last7Days} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                   <defs>
                     <linearGradient id="completionGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="5%" stopColor="#10b981" stopOpacity={0.4}/>
-                      <stop offset="95%" stopColor="#10b981" stopOpacity={0}/>
+                      <stop offset="5%" stopColor="hsl(var(--success))" stopOpacity={0.4}/>
+                      <stop offset="95%" stopColor="hsl(var(--success))" stopOpacity={0}/>
                     </linearGradient>
                   </defs>
-                  <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.1)" vertical={false} />
+                  <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" vertical={false} />
                   <XAxis 
                     dataKey="date" 
                     axisLine={false}
@@ -331,19 +348,19 @@ const Analytics = () => {
                   <Tooltip 
                     contentStyle={{ 
                       backgroundColor: 'hsl(var(--background))', 
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
+                      border: '2px solid hsl(var(--border))',
+                      borderRadius: '12px',
                       color: 'hsl(var(--foreground))'
                     }}
                   />
                   <Area 
                     type="monotone" 
                     dataKey="completionRate" 
-                    stroke="#10b981" 
+                    stroke="hsl(var(--success))" 
                     strokeWidth={3}
                     fill="url(#completionGradient)"
-                    dot={{ fill: '#10b981', strokeWidth: 2, r: 4, stroke: 'hsl(var(--background))' }}
-                    activeDot={{ r: 6, stroke: '#10b981', strokeWidth: 2, fill: 'hsl(var(--background))' }}
+                    dot={{ fill: 'hsl(var(--success))', strokeWidth: 2, r: 4, stroke: 'hsl(var(--background))' }}
+                    activeDot={{ r: 6, stroke: 'hsl(var(--success))', strokeWidth: 2, fill: 'hsl(var(--background))' }}
                     name="Completion Rate"
                   />
                 </AreaChart>
@@ -352,60 +369,102 @@ const Analytics = () => {
           </CardContent>
         </Card>
 
-        {/* Summary Insights */}
+        {/* Summary Insights & Recommendations - HIGHLIGHTED */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
-          <Card className="bg-gradient-to-br from-black/40 to-blue-900/20 backdrop-blur-xl border-blue-500/20 border overflow-hidden animate-fade-in" style={{ animationDelay: '0.8s' }}>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-foreground text-base sm:text-lg flex items-center gap-2">
-                <span className="text-xl">📊</span> Insights
+          {/* Insights Card - Highlighted */}
+          <Card className="glass-bold border-2 border-warning/40 overflow-hidden animate-fade-in relative group" style={{ animationDelay: '0.8s' }}>
+            {/* Glowing effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-warning/10 via-transparent to-transparent opacity-50" />
+            <div className="absolute -top-20 -right-20 w-40 h-40 bg-warning/20 rounded-full blur-3xl group-hover:bg-warning/30 transition-colors" />
+            
+            <div className="h-2 w-full bg-gradient-to-r from-warning via-warning to-accent animate-pulse" />
+            <CardHeader className="pb-3 relative">
+              <CardTitle className="text-foreground text-lg sm:text-xl flex items-center gap-3 font-black">
+                <div className="p-3 rounded-xl bg-warning/20 glow-accent">
+                  <Lightbulb className="h-6 w-6 text-warning" />
+                </div>
+                <span className="text-gradient">Key Insights</span>
+                <Star className="h-5 w-5 text-warning animate-pulse ml-auto" />
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              <div className="p-3 rounded-xl bg-black/20 border border-white/5">
-                <p className="text-muted-foreground text-sm">
-                  {completionRate >= 80 
-                    ? "🎉 Excellent! You're maintaining a high completion rate."
-                    : completionRate >= 60
-                      ? "👍 Good progress! Consider focusing on fewer, high-priority tasks."
-                      : "💡 Try setting more achievable daily goals to build momentum."
-                  }
-                </p>
+            <CardContent className="space-y-4 relative">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-warning/10 to-warning/5 border-2 border-warning/30 hover:border-warning/50 transition-colors">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-warning/20 mt-0.5">
+                    <Sparkles className="h-4 w-4 text-warning" />
+                  </div>
+                  <p className="text-foreground text-sm font-semibold leading-relaxed">
+                    {completionRate >= 80 
+                      ? "🎉 Excellent! You're maintaining a high completion rate. Keep up the amazing momentum!"
+                      : completionRate >= 60
+                        ? "👍 Good progress! Consider focusing on fewer, high-priority tasks for even better results."
+                        : "💡 Try setting more achievable daily goals to build momentum and consistency."
+                    }
+                  </p>
+                </div>
               </div>
-              <div className="p-3 rounded-xl bg-black/20 border border-white/5">
-                <p className="text-muted-foreground text-sm">
-                  {urgentTasks > 0 
-                    ? `⚡ You have ${urgentTasks} urgent task${urgentTasks > 1 ? 's' : ''} that need immediate attention.`
-                    : "✅ Great! No urgent tasks pending. Focus on long-term goals."
-                  }
-                </p>
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-warning/10 to-warning/5 border-2 border-warning/30 hover:border-warning/50 transition-colors">
+                <div className="flex items-start gap-3">
+                  <div className="p-2 rounded-lg bg-warning/20 mt-0.5">
+                    <Zap className="h-4 w-4 text-warning" />
+                  </div>
+                  <p className="text-foreground text-sm font-semibold leading-relaxed">
+                    {urgentTasks > 0 
+                      ? `⚡ You have ${urgentTasks} urgent task${urgentTasks > 1 ? 's' : ''} requiring immediate attention. Prioritize these first!`
+                      : "✅ Great! No urgent tasks pending. Perfect time to focus on long-term goals."
+                    }
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
 
-          <Card className="bg-gradient-to-br from-black/40 to-purple-900/20 backdrop-blur-xl border-purple-500/20 border overflow-hidden animate-fade-in" style={{ animationDelay: '0.9s' }}>
-            <CardHeader className="pb-3">
-              <CardTitle className="text-foreground text-base sm:text-lg flex items-center gap-2">
-                <span className="text-xl">🎯</span> Recommendations
+          {/* Recommendations Card - Highlighted */}
+          <Card className="glass-bold border-2 border-accent/40 overflow-hidden animate-fade-in relative group" style={{ animationDelay: '0.9s' }}>
+            {/* Glowing effect */}
+            <div className="absolute inset-0 bg-gradient-to-br from-accent/10 via-transparent to-transparent opacity-50" />
+            <div className="absolute -top-20 -left-20 w-40 h-40 bg-accent/20 rounded-full blur-3xl group-hover:bg-accent/30 transition-colors" />
+            
+            <div className="h-2 w-full bg-gradient-to-r from-accent via-primary to-success animate-pulse" />
+            <CardHeader className="pb-3 relative">
+              <CardTitle className="text-foreground text-lg sm:text-xl flex items-center gap-3 font-black">
+                <div className="p-3 rounded-xl bg-accent/20 glow-primary">
+                  <Brain className="h-6 w-6 text-accent" />
+                </div>
+                <span className="text-gradient">Smart Recommendations</span>
+                <Star className="h-5 w-5 text-accent animate-pulse ml-auto" />
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="p-3 rounded-xl bg-black/20 border border-white/5">
-                <p className="text-muted-foreground text-sm flex items-start gap-2">
-                  <span className="text-purple-400">•</span>
-                  {completionRate < 50 ? "Try the Pomodoro technique to improve focus" : "Consider setting stretch goals to challenge yourself"}
-                </p>
+            <CardContent className="space-y-3 relative">
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-accent/10 to-accent/5 border-2 border-accent/30 hover:border-accent/50 transition-colors">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-accent/20 flex items-center justify-center shrink-0">
+                    <span className="text-accent font-black">1</span>
+                  </div>
+                  <p className="text-foreground text-sm font-semibold leading-relaxed">
+                    {completionRate < 50 ? "Try the Pomodoro technique to improve focus and productivity" : "Consider setting stretch goals to challenge yourself"}
+                  </p>
+                </div>
               </div>
-              <div className="p-3 rounded-xl bg-black/20 border border-white/5">
-                <p className="text-muted-foreground text-sm flex items-start gap-2">
-                  <span className="text-purple-400">•</span>
-                  {urgentTasks > dailyTasks ? "Balance urgent tasks with regular daily goals" : "Good balance between urgent and daily tasks"}
-                </p>
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 hover:border-primary/50 transition-colors">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center shrink-0">
+                    <span className="text-primary font-black">2</span>
+                  </div>
+                  <p className="text-foreground text-sm font-semibold leading-relaxed">
+                    {urgentTasks > dailyTasks ? "Balance urgent tasks with regular daily goals for sustainability" : "Great balance between urgent and daily tasks"}
+                  </p>
+                </div>
               </div>
-              <div className="p-3 rounded-xl bg-black/20 border border-white/5">
-                <p className="text-muted-foreground text-sm flex items-start gap-2">
-                  <span className="text-purple-400">•</span>
-                  Review and adjust your goal priorities weekly for better results
-                </p>
+              <div className="p-4 rounded-2xl bg-gradient-to-br from-success/10 to-success/5 border-2 border-success/30 hover:border-success/50 transition-colors">
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-lg bg-success/20 flex items-center justify-center shrink-0">
+                    <span className="text-success font-black">3</span>
+                  </div>
+                  <p className="text-foreground text-sm font-semibold leading-relaxed">
+                    Review and adjust your goal priorities weekly for optimal results
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
