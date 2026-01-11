@@ -61,31 +61,22 @@ serve(async (req) => {
   }
 
   try {
-    // Authentication check
+    // Optional authentication - allow both authenticated and anonymous access
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - Missing or invalid authorization header' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    let userId = 'anonymous';
+    
+    if (authHeader?.startsWith('Bearer ')) {
+      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+      const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+      const token = authHeader.replace('Bearer ', '');
+      
+      const { valid, userId: validatedUserId } = await validateJWT(token, supabaseUrl, supabaseAnonKey);
+      if (valid && validatedUserId) {
+        userId = validatedUserId;
+      }
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const token = authHeader.replace('Bearer ', '');
-    
-    // Validate the JWT token
-    const { valid, userId } = await validateJWT(token, supabaseUrl, supabaseAnonKey);
-    
-    if (!valid || !userId) {
-      console.error('JWT validation failed');
-      return new Response(
-        JSON.stringify({ error: 'Unauthorized - Invalid token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    console.log('Authenticated request from user:', userId);
+    console.log('Request from user:', userId);
 
     // Parse and validate input
     let rawBody;
