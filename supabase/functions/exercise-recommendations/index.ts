@@ -1,15 +1,50 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+// Allowed origins for CORS
+const ALLOWED_ORIGINS = [
+  'https://vnshckquumonswjumvsl.lovable.app',
+  'https://vnshckquumonswjumvsl.lovableproject.com',
+  'http://localhost:5173',
+  'http://localhost:3000',
+];
+
+function getCorsHeaders(origin: string | null): Record<string, string> {
+  const allowedOrigin = origin && ALLOWED_ORIGINS.some(allowed => 
+    origin === allowed || origin.endsWith('.lovable.app') || origin.endsWith('.lovableproject.com')
+  ) ? origin : ALLOWED_ORIGINS[0];
+  
+  return {
+    'Access-Control-Allow-Origin': allowedOrigin,
+    'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+    'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  };
+}
 
 // Input validation helpers
 const ALLOWED_FITNESS_LEVELS = ['beginner', 'intermediate', 'advanced'];
 const MAX_STRING_LENGTH = 200;
 const MAX_ARRAY_LENGTH = 20;
 const MAX_ARRAY_ITEM_LENGTH = 50;
+
+// Prompt injection detection patterns
+const SUSPICIOUS_PATTERNS = [
+  /ignore.*previous.*instruction/i,
+  /system\s*:/i,
+  /you\s+are\s+now/i,
+  /admin.*mode/i,
+  /bypass.*safety/i,
+  /disregard.*guideline/i,
+  /forget.*everything/i,
+  /new\s+instruction/i,
+  /override.*prompt/i,
+  /pretend\s+to\s+be/i,
+  /act\s+as\s+if/i,
+  /jailbreak/i,
+];
+
+function detectPromptInjection(text: string): boolean {
+  return SUSPICIOUS_PATTERNS.some(pattern => pattern.test(text));
+}
 
 function sanitizeString(input: unknown, maxLength: number = MAX_STRING_LENGTH): string | null {
   if (input === null || input === undefined) return null;
@@ -56,6 +91,9 @@ async function validateJWT(token: string, supabaseUrl: string, supabaseAnonKey: 
 }
 
 serve(async (req) => {
+  const origin = req.headers.get('Origin');
+  const corsHeaders = getCorsHeaders(origin);
+  
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
@@ -95,6 +133,15 @@ serve(async (req) => {
     const preferences = sanitizeString(rawBody.preferences, 500) || 'None';
     const availableEquipment = validateStringArray(rawBody.availableEquipment);
     const targetMuscles = validateStringArray(rawBody.targetMuscles, 10);
+    
+    // Check for prompt injection attempts
+    if (detectPromptInjection(goals) || detectPromptInjection(preferences)) {
+      console.warn('Potential prompt injection attempt detected:', { userId, goals, preferences });
+      return new Response(
+        JSON.stringify({ error: 'Invalid input detected. Please use appropriate fitness-related terms.' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
     
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
