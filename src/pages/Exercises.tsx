@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ExerciseCard } from '@/components/ExerciseCard';
 import { AIExerciseRecommendations } from '@/components/AIExerciseRecommendations';
+import AIExerciseCamera from '@/components/AIExerciseCamera';
 import { exercises, exerciseCategories } from '@/data/exercises';
 import { Exercise } from '@/types/exercise';
 import { Search, Filter, Dumbbell, Sparkles, Flame, Trophy, Zap, Heart, Target, TrendingUp } from 'lucide-react';
@@ -185,6 +186,11 @@ const Exercises = () => {
             </div>
           </CardContent>
         </Card>
+
+        {/* AI Camera Exercise Detector */}
+        <div className="mb-8 animate-fade-in">
+          <AIExerciseCamera />
+        </div>
 
         {/* AI Recommendations Section */}
         <div className="mb-8 animate-fade-in">
