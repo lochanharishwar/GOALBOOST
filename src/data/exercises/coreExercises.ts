@@ -10,7 +10,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 30-60 seconds',
     equipment: ['None'],
     targetMuscles: ['Core', 'Shoulders', 'Glutes'],
-    image: 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=500&h=400&fit=crop',
     steps: [
       'Start on forearms and toes',
       'Keep body in straight line',
@@ -29,7 +29,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 30-60 seconds',
     equipment: ['None'],
     targetMuscles: ['Core', 'Shoulders', 'Triceps'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=400&fit=crop',
     steps: [
       'Start in push-up position',
       'Arms straight, hands under shoulders',
@@ -48,7 +48,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 30-45 seconds per side',
     equipment: ['None'],
     targetMuscles: ['Obliques', 'Core', 'Shoulders'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&h=400&fit=crop',
     steps: [
       'Lie on side with forearm on ground',
       'Stack feet or stagger them',
@@ -67,7 +67,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 20-30 reps',
     equipment: ['None'],
     targetMuscles: ['Core', 'Shoulders', 'Anti-rotation'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=400&fit=crop',
     steps: [
       'Start in high plank position',
       'Tap right hand to left shoulder',
@@ -86,7 +86,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 10-15 reps',
     equipment: ['None'],
     targetMuscles: ['Core', 'Triceps', 'Shoulders'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1598971457999-ca4ef48a9a71?w=500&h=400&fit=crop',
     steps: [
       'Start in forearm plank',
       'Place right hand, then left hand',
@@ -105,7 +105,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 20-30 reps',
     equipment: ['None'],
     targetMuscles: ['Core', 'Hip Abductors', 'Shoulders'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=400&fit=crop',
     steps: [
       'Start in high plank position',
       'Jump feet out wide',
@@ -124,7 +124,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 20-30 reps',
     equipment: ['None'],
     targetMuscles: ['Obliques', 'Core'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1566241142559-40e1dab266c6?w=500&h=400&fit=crop',
     steps: [
       'Start in forearm plank',
       'Rotate hips to one side',
@@ -202,7 +202,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps',
     equipment: ['Cable machine', 'Rope attachment'],
     targetMuscles: ['Rectus Abdominis'],
-    image: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500&h=400&fit=crop',
     steps: [
       'Kneel facing cable with rope behind head',
       'Crunch down bringing elbows to thighs',
@@ -242,7 +242,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps',
     equipment: ['None'],
     targetMuscles: ['Lower Abs', 'Hip Flexors'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&h=400&fit=crop',
     steps: [
       'Lie flat on back',
       'Place hands under lower back for support',
@@ -261,7 +261,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 10-15 reps',
     equipment: ['Pull-up bar'],
     targetMuscles: ['Lower Abs', 'Hip Flexors', 'Grip'],
-    image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1598971457999-ca4ef48a9a71?w=500&h=400&fit=crop',
     steps: [
       'Hang from bar with overhand grip',
       'Keep legs straight or slightly bent',
@@ -280,7 +280,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps',
     equipment: ['Pull-up bar'],
     targetMuscles: ['Lower Abs', 'Hip Flexors'],
-    image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2afe61?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1598971457999-ca4ef48a9a71?w=500&h=400&fit=crop',
     steps: [
       'Hang from bar with overhand grip',
       'Bring knees up toward chest',
@@ -339,7 +339,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 20-30 reps',
     equipment: ['Weight plate', 'Dumbbell', 'Medicine ball'],
     targetMuscles: ['Obliques', 'Rectus Abdominis'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500&h=400&fit=crop',
     steps: [
       'Sit with knees bent, feet off ground',
       'Lean back at 45 degree angle',
@@ -358,7 +358,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps per side',
     equipment: ['Cable machine'],
     targetMuscles: ['Obliques', 'Core', 'Shoulders'],
-    image: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500&h=400&fit=crop',
     steps: [
       'Set cable at high or low position',
       'Stand sideways to machine',
@@ -377,7 +377,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps per side',
     equipment: ['Cable machine', 'Resistance band'],
     targetMuscles: ['Core', 'Anti-rotation'],
-    image: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500&h=400&fit=crop',
     steps: [
       'Stand sideways to cable',
       'Hold handle at chest',
@@ -396,7 +396,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 10-15 reps',
     equipment: ['Slam ball'],
     targetMuscles: ['Core', 'Shoulders', 'Full Body'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500&h=400&fit=crop',
     steps: [
       'Hold ball overhead',
       'Slam ball down to ground with force',
@@ -417,7 +417,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 30-45 seconds',
     equipment: ['None'],
     targetMuscles: ['Core', 'Hip Flexors', 'Shoulders'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=400&fit=crop',
     steps: [
       'Start in high plank position',
       'Drive one knee toward chest',
@@ -436,7 +436,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 30-45 seconds',
     equipment: ['None'],
     targetMuscles: ['Obliques', 'Core', 'Hip Flexors'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=400&fit=crop',
     steps: [
       'Start in high plank position',
       'Drive right knee toward left elbow',
@@ -455,7 +455,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 10-15 reps per side',
     equipment: ['None'],
     targetMuscles: ['Core', 'Hip Flexors'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=400&fit=crop',
     steps: [
       'Start in high plank position',
       'Slowly bring knee to chest',
@@ -476,7 +476,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 10-15 reps per side',
     equipment: ['None'],
     targetMuscles: ['Core', 'Hip Flexors'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&h=400&fit=crop',
     steps: [
       'Lie on back with arms up and knees at 90 degrees',
       'Lower opposite arm and leg toward ground',
@@ -495,7 +495,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 10-15 reps per side',
     equipment: ['None'],
     targetMuscles: ['Core', 'Lower Back', 'Glutes'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&h=400&fit=crop',
     steps: [
       'Start on hands and knees',
       'Extend opposite arm and leg',
@@ -609,7 +609,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 5-10 reps',
     equipment: ['Bench'],
     targetMuscles: ['Full Core', 'Hip Flexors'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1598971457999-ca4ef48a9a71?w=500&h=400&fit=crop',
     steps: [
       'Lie on bench holding behind head',
       'Lift entire body off bench',
@@ -628,7 +628,7 @@ export const coreExercises: Exercise[] = [
     duration: '3 sets of 15-30 seconds',
     equipment: ['Parallettes', 'Dip bars'],
     targetMuscles: ['Core', 'Hip Flexors', 'Triceps'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1598971457999-ca4ef48a9a71?w=500&h=400&fit=crop',
     steps: [
       'Support body on parallettes or bars',
       'Lift legs straight in front',

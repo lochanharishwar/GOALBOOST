@@ -10,7 +10,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps',
     equipment: ['None'],
     targetMuscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Calves'],
-    image: 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=500&h=400&fit=crop',
     steps: [
       'Stand with feet shoulder-width apart',
       'Keep chest up and core engaged',
@@ -29,7 +29,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '4 sets of 6-10 reps',
     equipment: ['Barbell', 'Squat rack', 'Weight plates'],
     targetMuscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Core', 'Lower Back'],
-    image: 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1534368786749-b63e05c92717?w=500&h=400&fit=crop',
     steps: [
       'Position bar on upper back',
       'Unrack and step back',
@@ -48,7 +48,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '4 sets of 6-8 reps',
     equipment: ['Barbell', 'Squat rack'],
     targetMuscles: ['Quadriceps', 'Core', 'Upper Back', 'Glutes'],
-    image: 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1541534741688-6078c6bfb5c5?w=500&h=400&fit=crop',
     steps: [
       'Position bar on front of shoulders',
       'Keep elbows high throughout',
@@ -66,7 +66,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps',
     equipment: ['Dumbbell', 'Kettlebell'],
     targetMuscles: ['Quadriceps', 'Glutes', 'Core'],
-    image: 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500&h=400&fit=crop',
     steps: [
       'Hold weight at chest level',
       'Stand with feet shoulder-width apart',
@@ -85,7 +85,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps per leg',
     equipment: ['Bench', 'Dumbbells (optional)'],
     targetMuscles: ['Quadriceps', 'Glutes', 'Hip Flexors'],
-    image: 'https://images.unsplash.com/photo-1597452485669-2c7bb5fef90d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=500&h=400&fit=crop',
     steps: [
       'Place back foot on bench behind you',
       'Lower down by bending front knee',
@@ -103,7 +103,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '4 sets of 10-15 reps',
     equipment: ['Leg press machine'],
     targetMuscles: ['Quadriceps', 'Glutes', 'Hamstrings'],
-    image: 'https://images.unsplash.com/photo-1434608519344-49d77a699e3d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1597452485677-d661670d9640?w=500&h=400&fit=crop',
     steps: [
       'Sit in machine with back against pad',
       'Place feet shoulder-width on platform',
@@ -121,7 +121,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps',
     equipment: ['Hack squat machine'],
     targetMuscles: ['Quadriceps', 'Glutes'],
-    image: 'https://images.unsplash.com/photo-1434608519344-49d77a699e3d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1581009146145-b5ef050c149a?w=500&h=400&fit=crop',
     steps: [
       'Stand on platform with shoulders under pads',
       'Lower by bending knees',
@@ -139,7 +139,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-15 reps',
     equipment: ['Sissy squat bench (optional)'],
     targetMuscles: ['Quadriceps'],
-    image: 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=500&h=400&fit=crop',
     steps: [
       'Stand holding something for balance',
       'Rise onto toes and lean back',
@@ -158,7 +158,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps',
     equipment: ['Leg extension machine'],
     targetMuscles: ['Quadriceps'],
-    image: 'https://images.unsplash.com/photo-1434608519344-49d77a699e3d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?w=500&h=400&fit=crop',
     steps: [
       'Sit in machine with pad on lower shins',
       'Extend legs until straight',
@@ -176,7 +176,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 30-60 seconds',
     equipment: ['Wall'],
     targetMuscles: ['Quadriceps', 'Glutes'],
-    image: 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019614242-c5c5dee9f50b?w=500&h=400&fit=crop',
     steps: [
       'Stand with back against wall',
       'Slide down until thighs parallel',
@@ -196,7 +196,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps',
     equipment: ['Barbell', 'Bench', 'Pad'],
     targetMuscles: ['Glutes', 'Hamstrings'],
-    image: 'https://images.unsplash.com/photo-1434608519344-49d77a699e3d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1579758629938-03607ccdbaba?w=500&h=400&fit=crop',
     steps: [
       'Sit on ground with upper back on bench',
       'Roll barbell over hips',
@@ -215,7 +215,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps',
     equipment: ['None'],
     targetMuscles: ['Glutes', 'Hamstrings', 'Core'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=500&h=400&fit=crop',
     steps: [
       'Lie on back with knees bent',
       'Feet flat on floor near glutes',
@@ -234,7 +234,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps per leg',
     equipment: ['None'],
     targetMuscles: ['Glutes', 'Hamstrings', 'Core'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500&h=400&fit=crop',
     steps: [
       'Lie on back with one knee bent',
       'Extend other leg straight',
@@ -252,7 +252,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps per leg',
     equipment: ['None'],
     targetMuscles: ['Glutes'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500&h=400&fit=crop',
     steps: [
       'Start on hands and knees',
       'Keep knee bent at 90 degrees',
@@ -271,7 +271,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps per leg',
     equipment: ['None'],
     targetMuscles: ['Glute Medius', 'Hip Abductors'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500&h=400&fit=crop',
     steps: [
       'Start on hands and knees',
       'Keep knee bent at 90 degrees',
@@ -289,7 +289,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps per leg',
     equipment: ['Cable machine', 'Ankle strap'],
     targetMuscles: ['Glutes'],
-    image: 'https://images.unsplash.com/photo-1599058917212-d750089bc07e?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500&h=400&fit=crop',
     steps: [
       'Attach ankle strap to low cable',
       'Face machine holding for support',
@@ -308,7 +308,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps per leg',
     equipment: ['Box', 'Bench', 'Step'],
     targetMuscles: ['Glutes', 'Quadriceps', 'Hamstrings'],
-    image: 'https://images.unsplash.com/photo-1597452485669-2c7bb5fef90d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1580086319619-3ed498161c77?w=500&h=400&fit=crop',
     steps: [
       'Stand facing elevated surface',
       'Step up with one foot',
@@ -328,7 +328,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '4 sets of 6-8 reps',
     equipment: ['Barbell', 'Weight plates'],
     targetMuscles: ['Hamstrings', 'Glutes', 'Lower back', 'Core'],
-    image: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1603287681836-b174ce5074c2?w=500&h=400&fit=crop',
     steps: [
       'Stand holding barbell with overhand grip',
       'Keep knees slightly bent',
@@ -347,7 +347,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '4 sets of 5-8 reps',
     equipment: ['Barbell', 'Weight plates'],
     targetMuscles: ['Full Posterior Chain', 'Quads', 'Core', 'Back'],
-    image: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1550259979-ed79b48d2a30?w=500&h=400&fit=crop',
     steps: [
       'Stand with feet hip-width, bar over mid-foot',
       'Hinge and grip bar outside legs',
@@ -366,7 +366,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '4 sets of 5-8 reps',
     equipment: ['Barbell', 'Weight plates'],
     targetMuscles: ['Glutes', 'Adductors', 'Hamstrings', 'Quads'],
-    image: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1584466977773-e625c37cdd50?w=500&h=400&fit=crop',
     steps: [
       'Take wide stance with toes pointed out',
       'Grip bar with arms inside legs',
@@ -385,7 +385,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps',
     equipment: ['Barbell', 'Dumbbells'],
     targetMuscles: ['Hamstrings', 'Glutes', 'Lower Back'],
-    image: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1598575436892-042c66d85c4e?w=500&h=400&fit=crop',
     steps: [
       'Hold weight with legs nearly straight',
       'Hinge at hips lowering weight',
@@ -404,7 +404,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps per leg',
     equipment: ['Dumbbell', 'Kettlebell'],
     targetMuscles: ['Hamstrings', 'Glutes', 'Core'],
-    image: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=500&h=400&fit=crop',
     steps: [
       'Stand on one leg holding weight',
       'Hinge forward raising back leg',
@@ -422,7 +422,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps',
     equipment: ['Leg curl machine'],
     targetMuscles: ['Hamstrings'],
-    image: 'https://images.unsplash.com/photo-1434608519344-49d77a699e3d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?w=500&h=400&fit=crop',
     steps: [
       'Lie face down on machine',
       'Position pad above heels',
@@ -440,7 +440,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps',
     equipment: ['Seated leg curl machine'],
     targetMuscles: ['Hamstrings'],
-    image: 'https://images.unsplash.com/photo-1434608519344-49d77a699e3d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?w=500&h=400&fit=crop',
     steps: [
       'Sit in machine with legs extended',
       'Position pad above ankles',
@@ -458,7 +458,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 5-10 reps',
     equipment: ['Partner', 'Anchor point'],
     targetMuscles: ['Hamstrings'],
-    image: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
     steps: [
       'Kneel with ankles secured',
       'Keep body straight from knees to head',
@@ -476,7 +476,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps',
     equipment: ['Barbell'],
     targetMuscles: ['Hamstrings', 'Glutes', 'Lower Back'],
-    image: 'https://images.unsplash.com/photo-1581009137042-c552e485697a?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1598575436892-042c66d85c4e?w=500&h=400&fit=crop',
     steps: [
       'Position bar on upper back',
       'Keep slight knee bend',
@@ -497,7 +497,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps',
     equipment: ['Calf raise machine', 'Step'],
     targetMuscles: ['Gastrocnemius', 'Soleus'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019613576-2b22c76fd955?w=500&h=400&fit=crop',
     steps: [
       'Stand on edge of step on balls of feet',
       'Lower heels below step level',
@@ -516,7 +516,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps',
     equipment: ['Seated calf raise machine'],
     targetMuscles: ['Soleus'],
-    image: 'https://images.unsplash.com/photo-1434608519344-49d77a699e3d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1558611848-73f7eb4001a1?w=500&h=400&fit=crop',
     steps: [
       'Sit in machine with pad on thighs',
       'Place balls of feet on platform',
@@ -535,7 +535,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps',
     equipment: ['Donkey calf machine', 'Partner'],
     targetMuscles: ['Gastrocnemius'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019613576-2b22c76fd955?w=500&h=400&fit=crop',
     steps: [
       'Bend forward at hips on machine',
       'Place balls of feet on platform',
@@ -554,7 +554,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 12-15 reps per leg',
     equipment: ['Step', 'Dumbbell'],
     targetMuscles: ['Calves'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019613576-2b22c76fd955?w=500&h=400&fit=crop',
     steps: [
       'Stand on edge of step on one foot',
       'Hold wall or something for balance',
@@ -575,7 +575,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps per leg',
     equipment: ['None'],
     targetMuscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Calves'],
-    image: 'https://images.unsplash.com/photo-1597452485669-2c7bb5fef90d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=500&h=400&fit=crop',
     steps: [
       'Stand tall with feet hip-width',
       'Step forward into lunge',
@@ -593,7 +593,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps per leg',
     equipment: ['None', 'Dumbbells'],
     targetMuscles: ['Glutes', 'Quadriceps', 'Hamstrings'],
-    image: 'https://images.unsplash.com/photo-1597452485669-2c7bb5fef90d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=500&h=400&fit=crop',
     steps: [
       'Stand tall',
       'Step backward into lunge',
@@ -611,7 +611,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps per leg',
     equipment: ['None', 'Dumbbells'],
     targetMuscles: ['Quadriceps', 'Glutes', 'Hamstrings', 'Calves'],
-    image: 'https://images.unsplash.com/photo-1597452485669-2c7bb5fef90d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
     steps: [
       'Step forward into lunge',
       'Lower until both knees at 90 degrees',
@@ -629,7 +629,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps per side',
     equipment: ['None', 'Dumbbells'],
     targetMuscles: ['Adductors', 'Glutes', 'Quadriceps'],
-    image: 'https://images.unsplash.com/photo-1597452485669-2c7bb5fef90d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500&h=400&fit=crop',
     steps: [
       'Stand with feet together',
       'Step wide to one side',
@@ -647,7 +647,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps per leg',
     equipment: ['None', 'Dumbbells'],
     targetMuscles: ['Glutes', 'Quadriceps', 'Adductors'],
-    image: 'https://images.unsplash.com/photo-1597452485669-2c7bb5fef90d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500&h=400&fit=crop',
     steps: [
       'Stand with feet hip-width',
       'Step one leg behind and across',
@@ -665,7 +665,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-12 reps per leg',
     equipment: ['None'],
     targetMuscles: ['Quadriceps', 'Glutes', 'Calves', 'Hamstrings'],
-    image: 'https://images.unsplash.com/photo-1597452485669-2c7bb5fef90d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1601422407692-ec73548d8f34?w=500&h=400&fit=crop',
     steps: [
       'Start in lunge position',
       'Jump and switch legs mid-air',
@@ -685,7 +685,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps',
     equipment: ['Hip abduction machine'],
     targetMuscles: ['Glute Medius', 'Hip Abductors'],
-    image: 'https://images.unsplash.com/photo-1434608519344-49d77a699e3d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500&h=400&fit=crop',
     steps: [
       'Sit in machine with pads on outer thighs',
       'Push legs apart against resistance',
@@ -703,7 +703,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps',
     equipment: ['Hip adduction machine'],
     targetMuscles: ['Adductors', 'Inner Thighs'],
-    image: 'https://images.unsplash.com/photo-1434608519344-49d77a699e3d?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1571902943202-507ec2618e8f?w=500&h=400&fit=crop',
     steps: [
       'Sit in machine with pads on inner thighs',
       'Squeeze legs together against resistance',
@@ -721,7 +721,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 reps per side',
     equipment: ['Resistance band (optional)'],
     targetMuscles: ['Glute Medius', 'Hip External Rotators'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1518611012118-696072aa579a?w=500&h=400&fit=crop',
     steps: [
       'Lie on side with knees bent at 90 degrees',
       'Keep feet together',
@@ -739,7 +739,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 15-20 steps per direction',
     equipment: ['Resistance band'],
     targetMuscles: ['Glute Medius', 'Hip Abductors'],
-    image: 'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=500&h=400&fit=crop',
     steps: [
       'Place band above knees or ankles',
       'Get into half squat position',
@@ -776,7 +776,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 10-15 reps',
     equipment: ['None'],
     targetMuscles: ['Quadriceps', 'Glutes', 'Calves'],
-    image: 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1601422407692-ec73548d8f34?w=500&h=400&fit=crop',
     steps: [
       'Start in squat position',
       'Explode up jumping high',
@@ -794,7 +794,7 @@ export const lowerBodyExercises: Exercise[] = [
     duration: '3 sets of 5-8 reps per leg',
     equipment: ['None'],
     targetMuscles: ['Quadriceps', 'Glutes', 'Core'],
-    image: 'https://images.unsplash.com/photo-1566241440091-ec10de8db2e1?w=500&h=400&fit=crop',
+    image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?w=500&h=400&fit=crop',
     steps: [
       'Stand on one leg',
       'Extend other leg in front',
