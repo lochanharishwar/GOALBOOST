@@ -3,6 +3,14 @@ import { upperBodyExercises } from './exercises/upperBodyExercises';
 import { lowerBodyExercises } from './exercises/lowerBodyExercises';
 import { coreExercises } from './exercises/coreExercises';
 import { cardioExercises, flexibilityExercises, fullBodyExercises } from './exercises/otherExercises';
+import { 
+  additionalUpperBodyExercises, 
+  additionalLowerBodyExercises, 
+  additionalCoreExercises,
+  additionalCardioExercises,
+  additionalFlexibilityExercises,
+  additionalFullBodyExercises
+} from './exercises/additionalExercises';
 
 export const exerciseCategories: ExerciseCategory[] = [
   { id: 'upper-body', name: 'Upper Body', description: 'Strengthen your arms, chest, shoulders, and back', icon: '💪', color: 'bg-red-500/20 border-red-400/30 text-red-400' },
@@ -13,14 +21,20 @@ export const exerciseCategories: ExerciseCategory[] = [
   { id: 'flexibility', name: 'Flexibility', description: 'Improve flexibility and mobility', icon: '🧘', color: 'bg-purple-500/20 border-purple-400/30 text-purple-400' }
 ];
 
-// Combine all exercises from separate files
+// Combine all exercises from separate files - 250+ exercises total
 export const exercises = [
   ...upperBodyExercises,
+  ...additionalUpperBodyExercises,
   ...lowerBodyExercises,
+  ...additionalLowerBodyExercises,
   ...coreExercises,
+  ...additionalCoreExercises,
   ...cardioExercises,
+  ...additionalCardioExercises,
   ...flexibilityExercises,
-  ...fullBodyExercises
+  ...additionalFlexibilityExercises,
+  ...fullBodyExercises,
+  ...additionalFullBodyExercises
 ];
 
 // Export total count for display

@@ -5,10 +5,11 @@ import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { Sparkles, Loader2, Target, AlertCircle, Dumbbell, CheckCircle2, ArrowRight, Zap, Brain } from 'lucide-react';
+import { Sparkles, Loader2, Target, AlertCircle, Dumbbell, CheckCircle2, ArrowRight, Zap, Brain, WifiOff, Play } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { exercises } from '@/data/exercises';
+import { fallbackWorkoutTemplates, getRecommendedTemplate, FallbackWorkoutPlan } from '@/data/fallbackWorkoutTemplates';
 
 const fitnessLevels = ['beginner', 'intermediate', 'advanced'] as const;
 const goalOptions = ['Build Muscle', 'Lose Weight', 'Flexibility', 'Endurance'];
