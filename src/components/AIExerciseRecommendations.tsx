@@ -50,10 +50,13 @@ export const AIExerciseRecommendations = () => {
     return exercises.find(e => e.id === matchId);
   };
 
-  const handleGetRecommendations = async () => {
+  const handleGetRecommendations = async (retryCount = 0) => {
+    const maxRetries = 3;
+    const baseDelay = 2000;
+
     setIsLoading(true);
     setError(null);
-    setPlan(null);
+    if (retryCount === 0) setPlan(null);
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('exercise-recommendations', {
@@ -67,13 +70,34 @@ export const AIExerciseRecommendations = () => {
       });
 
       if (fnError) throw fnError;
-      if (data?.error) throw new Error(data.error);
+      if (data?.error) {
+        // Check for rate limit error
+        if (data.error.toLowerCase().includes('rate limit')) {
+          if (retryCount < maxRetries) {
+            const delay = baseDelay * Math.pow(2, retryCount);
+            setError(`High demand - retrying in ${delay / 1000}s... (${retryCount + 1}/${maxRetries})`);
+            await new Promise(resolve => setTimeout(resolve, delay));
+            return handleGetRecommendations(retryCount + 1);
+          }
+          throw new Error('Service is busy. Please wait 30 seconds and try again.');
+        }
+        throw new Error(data.error);
+      }
 
       setPlan(data.plan);
       toast({ title: "Plan Ready!", description: "Your workout plan has been generated." });
     } catch (err) {
       console.error('Error getting recommendations:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to get recommendations';
+      
+      // Handle rate limit with retry for network-level errors
+      if (errorMessage.toLowerCase().includes('rate limit') && retryCount < maxRetries) {
+        const delay = baseDelay * Math.pow(2, retryCount);
+        setError(`High demand - retrying in ${delay / 1000}s... (${retryCount + 1}/${maxRetries})`);
+        await new Promise(resolve => setTimeout(resolve, delay));
+        return handleGetRecommendations(retryCount + 1);
+      }
+      
       setError(errorMessage);
       toast({ title: "Error", description: errorMessage, variant: "destructive" });
     } finally {
@@ -166,7 +190,7 @@ export const AIExerciseRecommendations = () => {
 
             {/* Generate Button */}
             <Button
-              onClick={handleGetRecommendations}
+              onClick={() => handleGetRecommendations()}
               disabled={isLoading}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white font-semibold py-6 text-base rounded-xl shadow-xl shadow-purple-500/30 transition-all duration-300 hover:scale-[1.02] hover:shadow-2xl hover:shadow-purple-500/40 mt-4"
             >
