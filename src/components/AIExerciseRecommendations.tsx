@@ -32,6 +32,7 @@ export const AIExerciseRecommendations = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [plan, setPlan] = useState<ExercisePlan | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [retryInfo, setRetryInfo] = useState<string | null>(null);
   const [fitnessLevel, setFitnessLevel] = useState<string>('beginner');
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
@@ -52,10 +53,11 @@ export const AIExerciseRecommendations = () => {
 
   const handleGetRecommendations = async (retryCount = 0) => {
     const maxRetries = 3;
-    const baseDelay = 2000;
+    const baseDelay = 5000; // Start with 5 seconds
 
     setIsLoading(true);
     setError(null);
+    setRetryInfo(null);
     if (retryCount === 0) setPlan(null);
 
     try {
@@ -74,17 +76,24 @@ export const AIExerciseRecommendations = () => {
         // Check for rate limit error
         if (data.error.toLowerCase().includes('rate limit')) {
           if (retryCount < maxRetries) {
-            const delay = baseDelay * Math.pow(2, retryCount);
-            setError(`High demand - retrying in ${delay / 1000}s... (${retryCount + 1}/${maxRetries})`);
-            await new Promise(resolve => setTimeout(resolve, delay));
+            const delay = baseDelay * Math.pow(2, retryCount); // 5s, 10s, 20s
+            const seconds = delay / 1000;
+            
+            // Countdown display
+            for (let i = seconds; i > 0; i--) {
+              setRetryInfo(`High demand - waiting ${i}s before retry ${retryCount + 1}/${maxRetries}...`);
+              await new Promise(resolve => setTimeout(resolve, 1000));
+            }
+            setRetryInfo(null);
             return handleGetRecommendations(retryCount + 1);
           }
-          throw new Error('Service is busy. Please wait 30 seconds and try again.');
+          throw new Error('AI service is very busy right now. Please wait 1-2 minutes and try again.');
         }
         throw new Error(data.error);
       }
 
       setPlan(data.plan);
+      setRetryInfo(null);
       toast({ title: "Plan Ready!", description: "Your workout plan has been generated." });
     } catch (err) {
       console.error('Error getting recommendations:', err);
@@ -93,15 +102,23 @@ export const AIExerciseRecommendations = () => {
       // Handle rate limit with retry for network-level errors
       if (errorMessage.toLowerCase().includes('rate limit') && retryCount < maxRetries) {
         const delay = baseDelay * Math.pow(2, retryCount);
-        setError(`High demand - retrying in ${delay / 1000}s... (${retryCount + 1}/${maxRetries})`);
-        await new Promise(resolve => setTimeout(resolve, delay));
+        const seconds = delay / 1000;
+        
+        for (let i = seconds; i > 0; i--) {
+          setRetryInfo(`High demand - waiting ${i}s before retry ${retryCount + 1}/${maxRetries}...`);
+          await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+        setRetryInfo(null);
         return handleGetRecommendations(retryCount + 1);
       }
       
       setError(errorMessage);
+      setRetryInfo(null);
       toast({ title: "Error", description: errorMessage, variant: "destructive" });
     } finally {
-      setIsLoading(false);
+      if (retryCount === 0 || retryCount >= maxRetries) {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -210,8 +227,16 @@ export const AIExerciseRecommendations = () => {
 
           {/* Right Side - Output */}
           <div className="p-6 bg-gradient-to-br from-black/30 to-purple-900/10 min-h-[400px] flex flex-col">
+            {/* Retry Info Display */}
+            {retryInfo && (
+              <div className="p-4 rounded-xl bg-yellow-500/20 border border-yellow-500/30 flex items-center gap-3 animate-fade-in">
+                <Loader2 className="h-5 w-5 text-yellow-400 animate-spin shrink-0" />
+                <p className="text-yellow-300 text-sm">{retryInfo}</p>
+              </div>
+            )}
+
             {/* Error Display */}
-            {error && (
+            {error && !retryInfo && (
               <div className="p-4 rounded-xl bg-red-500/20 border border-red-500/30 flex items-center gap-3 animate-fade-in">
                 <AlertCircle className="h-5 w-5 text-red-400 shrink-0" />
                 <p className="text-red-300 text-sm">{error}</p>
