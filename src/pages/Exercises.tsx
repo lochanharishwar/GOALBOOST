@@ -12,6 +12,7 @@ import { Exercise } from '@/types/exercise';
 import { Search, Filter, Dumbbell, Sparkles, Flame, Trophy, Zap, Heart, Target, TrendingUp } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useTheme } from '@/contexts/ThemeContext';
+import { WorkoutPlanProvider } from '@/contexts/WorkoutPlanContext';
 
 const Exercises = () => {
   const { isDarkMode } = useTheme();
@@ -40,6 +41,7 @@ const Exercises = () => {
   }));
 
   return (
+    <WorkoutPlanProvider>
     <div className="min-h-screen relative overflow-hidden transition-all duration-500 font-inter bg-background">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -259,6 +261,7 @@ const Exercises = () => {
         )}
       </div>
     </div>
+    </WorkoutPlanProvider>
   );
 };
 

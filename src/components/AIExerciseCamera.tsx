@@ -11,6 +11,7 @@ import { Exercise } from '@/types/exercise';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from 'sonner';
 import { voiceFeedback } from '@/utils/voiceFeedback';
+import { useWorkoutPlan } from '@/contexts/WorkoutPlanContext';
 
 interface FeedbackItem {
   type: 'correct' | 'warning' | 'error';
@@ -33,6 +34,8 @@ const AIExerciseCamera = () => {
   const streamRef = useRef<MediaStream | null>(null);
   const analysisIntervalRef = useRef<NodeJS.Timeout | null>(null);
   
+  const { selectedExerciseForCoach, setSelectedExerciseForCoach } = useWorkoutPlan();
+  
   const [isStreaming, setIsStreaming] = useState(false);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [selectedExercise, setSelectedExercise] = useState<string>('');
@@ -47,6 +50,21 @@ const AIExerciseCamera = () => {
   const [selectedCamera, setSelectedCamera] = useState<string>('');
   const [bodyTracking, setBodyTracking] = useState<BodyPartTracking | null>(null);
   const [consecutiveGoodReps, setConsecutiveGoodReps] = useState(0);
+  
+  // Sync with context when exercise is selected from AI recommendations
+  useEffect(() => {
+    if (selectedExerciseForCoach && selectedExerciseForCoach !== selectedExercise) {
+      setSelectedExercise(selectedExerciseForCoach);
+      toast.success(`Exercise "${exercises.find(e => e.id === selectedExerciseForCoach)?.name}" selected. Start your camera to begin!`);
+    }
+  }, [selectedExerciseForCoach]);
+  
+  // Update context when local selection changes
+  useEffect(() => {
+    if (selectedExercise && selectedExercise !== selectedExerciseForCoach) {
+      setSelectedExerciseForCoach(selectedExercise);
+    }
+  }, [selectedExercise]);
 
   const selectedExerciseData = exercises.find(e => e.id === selectedExercise);
 
@@ -386,7 +404,7 @@ const AIExerciseCamera = () => {
   };
 
   return (
-    <Card className="glass-bold border-2 border-primary/20 overflow-hidden">
+    <Card id="ai-exercise-coach" className="glass-bold border-2 border-primary/20 overflow-hidden">
       <div className="h-1.5 w-full bg-gradient-to-r from-primary via-accent to-success" />
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
@@ -452,71 +470,171 @@ const AIExerciseCamera = () => {
           </div>
         )}
 
-        {/* Camera View */}
-        <div className="relative aspect-video bg-black/50 rounded-xl overflow-hidden border-2 border-muted">
-          <video
-            ref={videoRef}
-            className={cn(
-              "w-full h-full object-cover",
-              isStreaming ? "block" : "hidden"
-            )}
-            style={{ transform: 'scaleX(-1)' }}
-            playsInline
-            muted
-            autoPlay
-          />
-          <canvas ref={canvasRef} className="hidden" />
-          
-          {!isStreaming && (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4">
-              {isLoadingCamera ? (
-                <>
-                  <Loader2 className="h-12 w-12 text-primary animate-spin" />
-                  <p className="text-muted-foreground text-center">Connecting to camera...</p>
-                </>
-              ) : (
-                <>
-                  <div className="p-4 rounded-full bg-muted/20">
-                    <Video className="h-12 w-12 text-muted-foreground" />
-                  </div>
-                  <p className="text-muted-foreground text-center px-4">
-                    {cameraError || 'Click "Start Camera" to begin'}
-                  </p>
-                  {cameraError && (
-                    <Button variant="outline" size="sm" onClick={() => {
-                      setCameraError(null);
-                      getAvailableCameras();
-                    }}>
-                      <RefreshCw className="h-4 w-4 mr-2" />
-                      Retry
-                    </Button>
-                  )}
-                </>
+        {/* Camera + Live Feedback Side by Side */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Camera View - Takes 2/3 on large screens */}
+          <div className="lg:col-span-2 relative aspect-video bg-black/50 rounded-xl overflow-hidden border-2 border-muted">
+            <video
+              ref={videoRef}
+              className={cn(
+                "w-full h-full object-cover",
+                isStreaming ? "block" : "hidden"
               )}
-            </div>
-          )}
+              style={{ transform: 'scaleX(-1)' }}
+              playsInline
+              muted
+              autoPlay
+            />
+            <canvas ref={canvasRef} className="hidden" />
+            
+            {!isStreaming && (
+              <div className="absolute inset-0 flex flex-col items-center justify-center gap-4 p-4">
+                {isLoadingCamera ? (
+                  <>
+                    <Loader2 className="h-12 w-12 text-primary animate-spin" />
+                    <p className="text-muted-foreground text-center">Connecting to camera...</p>
+                  </>
+                ) : (
+                  <>
+                    <div className="p-4 rounded-full bg-muted/20">
+                      <Video className="h-12 w-12 text-muted-foreground" />
+                    </div>
+                    <p className="text-muted-foreground text-center px-4">
+                      {cameraError || 'Click "Start Camera" to begin'}
+                    </p>
+                    {cameraError && (
+                      <Button variant="outline" size="sm" onClick={() => {
+                        setCameraError(null);
+                        getAvailableCameras();
+                      }}>
+                        <RefreshCw className="h-4 w-4 mr-2" />
+                        Retry
+                      </Button>
+                    )}
+                  </>
+                )}
+              </div>
+            )}
 
-          {/* Overlay Stats */}
-          {isStreaming && isAnalyzing && (
-            <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
-              <Badge className={cn("text-lg font-bold px-4 py-2 border-2", getFormColor())}>
-                {getFormIcon()}
-                <span className="ml-2">{currentForm ? currentForm.toUpperCase() : 'ANALYZING'}</span>
-              </Badge>
-              <Badge className="text-lg font-bold px-4 py-2 bg-primary text-primary-foreground border-2 border-primary">
-                <Target className="h-4 w-4 mr-2" />
-                {repCount} REPS
-              </Badge>
-            </div>
-          )}
+            {/* Overlay Stats */}
+            {isStreaming && isAnalyzing && (
+              <div className="absolute top-4 left-4 right-4 flex items-center justify-between">
+                <Badge className={cn("text-lg font-bold px-4 py-2 border-2", getFormColor())}>
+                  {getFormIcon()}
+                  <span className="ml-2">{currentForm ? currentForm.toUpperCase() : 'ANALYZING'}</span>
+                </Badge>
+                <Badge className="text-lg font-bold px-4 py-2 bg-primary text-primary-foreground border-2 border-primary">
+                  <Target className="h-4 w-4 mr-2" />
+                  {repCount} REPS
+                </Badge>
+              </div>
+            )}
 
-          {/* Recording Indicator */}
-          {isAnalyzing && (
-            <div className="absolute bottom-4 left-4 flex items-center gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
-              <span className="text-white text-sm font-semibold drop-shadow-lg">ANALYZING</span>
+            {/* Recording Indicator */}
+            {isAnalyzing && (
+              <div className="absolute bottom-4 left-4 flex items-center gap-2">
+                <div className="w-3 h-3 rounded-full bg-red-500 animate-pulse" />
+                <span className="text-white text-sm font-semibold drop-shadow-lg">ANALYZING</span>
+              </div>
+            )}
+          </div>
+
+          {/* Live Feedback Panel - Takes 1/3 on large screens */}
+          <div className="lg:col-span-1 space-y-4">
+            {/* Stats Cards */}
+            <div className="grid grid-cols-2 gap-2">
+              <Card className="bg-primary/10 border-primary/20">
+                <CardContent className="p-3 text-center">
+                  <Zap className="h-6 w-6 mx-auto mb-1 text-primary" />
+                  <p className="text-2xl font-black text-primary">{repCount}</p>
+                  <p className="text-xs font-semibold text-muted-foreground">Reps</p>
+                </CardContent>
+              </Card>
+              <Card className="bg-accent/10 border-accent/20">
+                <CardContent className="p-3 text-center">
+                  {getFormIcon()}
+                  <p className="text-lg font-bold mt-1 capitalize text-foreground">
+                    {currentForm || 'Ready'}
+                  </p>
+                  <p className="text-xs font-semibold text-muted-foreground">Form</p>
+                </CardContent>
+              </Card>
             </div>
-          )}
+
+            {/* Body Part Tracking */}
+            {bodyTracking && isAnalyzing && (
+              <div className="space-y-2">
+                <h4 className="font-bold text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                  <Activity className="h-3 w-3" />
+                  Body Tracking
+                </h4>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {bodyTracking.leftArm && (
+                    <div className={cn("p-1.5 rounded-lg border text-xs font-medium text-center", getBodyPartStatus(bodyTracking.leftArm))}>
+                      <div className="font-bold text-[10px]">Left Arm</div>
+                      <div className="truncate text-[10px]">{bodyTracking.leftArm}</div>
+                    </div>
+                  )}
+                  {bodyTracking.rightArm && (
+                    <div className={cn("p-1.5 rounded-lg border text-xs font-medium text-center", getBodyPartStatus(bodyTracking.rightArm))}>
+                      <div className="font-bold text-[10px]">Right Arm</div>
+                      <div className="truncate text-[10px]">{bodyTracking.rightArm}</div>
+                    </div>
+                  )}
+                  {bodyTracking.leftLeg && (
+                    <div className={cn("p-1.5 rounded-lg border text-xs font-medium text-center", getBodyPartStatus(bodyTracking.leftLeg))}>
+                      <div className="font-bold text-[10px]">Left Leg</div>
+                      <div className="truncate text-[10px]">{bodyTracking.leftLeg}</div>
+                    </div>
+                  )}
+                  {bodyTracking.rightLeg && (
+                    <div className={cn("p-1.5 rounded-lg border text-xs font-medium text-center", getBodyPartStatus(bodyTracking.rightLeg))}>
+                      <div className="font-bold text-[10px]">Right Leg</div>
+                      <div className="truncate text-[10px]">{bodyTracking.rightLeg}</div>
+                    </div>
+                  )}
+                  {bodyTracking.spine && (
+                    <div className={cn("p-1.5 rounded-lg border text-xs font-medium text-center col-span-2", getBodyPartStatus(bodyTracking.spine))}>
+                      <div className="font-bold text-[10px]">Spine/Posture</div>
+                      <div className="truncate text-[10px]">{bodyTracking.spine}</div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* Live Feedback Log */}
+            <div className="space-y-2">
+              <h4 className="font-bold text-xs uppercase tracking-wider text-muted-foreground flex items-center gap-2">
+                <Activity className="h-3 w-3" />
+                Live Feedback
+              </h4>
+              <div className="space-y-1.5 max-h-32 overflow-y-auto">
+                {feedback.length === 0 ? (
+                  <p className="text-xs text-muted-foreground italic p-2 bg-muted/10 rounded-lg">
+                    {isAnalyzing ? 'Analyzing your form...' : 'Start analysis to see feedback'}
+                  </p>
+                ) : (
+                  feedback.map((item, index) => (
+                    <div 
+                      key={item.timestamp + index}
+                      className={cn(
+                        "p-2 rounded-lg border-l-4 text-xs font-medium animate-fade-in",
+                        item.type === 'correct' && "bg-green-500/10 border-green-500 text-green-700 dark:text-green-400",
+                        item.type === 'warning' && "bg-yellow-500/10 border-yellow-500 text-yellow-700 dark:text-yellow-400",
+                        item.type === 'error' && "bg-red-500/10 border-red-500 text-red-700 dark:text-red-400"
+                      )}
+                    >
+                      {item.type === 'correct' && <CheckCircle2 className="h-3 w-3 inline mr-1" />}
+                      {item.type === 'warning' && <AlertTriangle className="h-3 w-3 inline mr-1" />}
+                      {item.type === 'error' && <AlertTriangle className="h-3 w-3 inline mr-1" />}
+                      {item.message}
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </div>
         </div>
 
         {/* Controls */}
@@ -586,104 +704,6 @@ const AIExerciseCamera = () => {
             </>
           )}
         </div>
-
-        {/* Body Part Tracking Display */}
-        {bodyTracking && isAnalyzing && (
-          <div className="space-y-3">
-            <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Body Tracking
-            </h4>
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-              {bodyTracking.leftArm && (
-                <div className={cn("p-2 rounded-lg border text-xs font-medium text-center", getBodyPartStatus(bodyTracking.leftArm))}>
-                  <div className="font-bold">Left Arm</div>
-                  <div className="truncate">{bodyTracking.leftArm}</div>
-                </div>
-              )}
-              {bodyTracking.rightArm && (
-                <div className={cn("p-2 rounded-lg border text-xs font-medium text-center", getBodyPartStatus(bodyTracking.rightArm))}>
-                  <div className="font-bold">Right Arm</div>
-                  <div className="truncate">{bodyTracking.rightArm}</div>
-                </div>
-              )}
-              {bodyTracking.leftLeg && (
-                <div className={cn("p-2 rounded-lg border text-xs font-medium text-center", getBodyPartStatus(bodyTracking.leftLeg))}>
-                  <div className="font-bold">Left Leg</div>
-                  <div className="truncate">{bodyTracking.leftLeg}</div>
-                </div>
-              )}
-              {bodyTracking.rightLeg && (
-                <div className={cn("p-2 rounded-lg border text-xs font-medium text-center", getBodyPartStatus(bodyTracking.rightLeg))}>
-                  <div className="font-bold">Right Leg</div>
-                  <div className="truncate">{bodyTracking.rightLeg}</div>
-                </div>
-              )}
-              {bodyTracking.spine && (
-                <div className={cn("p-2 rounded-lg border text-xs font-medium text-center", getBodyPartStatus(bodyTracking.spine))}>
-                  <div className="font-bold">Spine/Posture</div>
-                  <div className="truncate">{bodyTracking.spine}</div>
-                </div>
-              )}
-              {bodyTracking.overall && (
-                <div className={cn("p-2 rounded-lg border text-xs font-medium text-center", getBodyPartStatus(bodyTracking.overall))}>
-                  <div className="font-bold">Overall</div>
-                  <div className="truncate">{bodyTracking.overall}</div>
-                </div>
-              )}
-            </div>
-          </div>
-        )}
-
-        {/* Stats Display */}
-        {(repCount > 0 || feedback.length > 0) && (
-          <div className="grid grid-cols-2 gap-4">
-            <Card className="bg-primary/10 border-primary/20">
-              <CardContent className="p-4 text-center">
-                <Zap className="h-8 w-8 mx-auto mb-2 text-primary" />
-                <p className="text-3xl font-black text-primary">{repCount}</p>
-                <p className="text-sm font-semibold text-muted-foreground">Reps Completed</p>
-              </CardContent>
-            </Card>
-            <Card className="bg-accent/10 border-accent/20">
-              <CardContent className="p-4 text-center">
-                {getFormIcon()}
-                <p className="text-xl font-bold mt-2 capitalize text-foreground">
-                  {currentForm || 'Waiting...'}
-                </p>
-                <p className="text-sm font-semibold text-muted-foreground">Current Form</p>
-              </CardContent>
-            </Card>
-          </div>
-        )}
-
-        {/* Feedback Log */}
-        {feedback.length > 0 && (
-          <div className="space-y-2">
-            <h4 className="font-bold text-sm uppercase tracking-wider text-muted-foreground flex items-center gap-2">
-              <Activity className="h-4 w-4" />
-              Live Feedback
-            </h4>
-            <div className="space-y-2 max-h-40 overflow-y-auto">
-              {feedback.map((item, index) => (
-                <div 
-                  key={item.timestamp + index}
-                  className={cn(
-                    "p-3 rounded-lg border-l-4 text-sm font-medium animate-fade-in",
-                    item.type === 'correct' && "bg-green-500/10 border-green-500 text-green-700 dark:text-green-400",
-                    item.type === 'warning' && "bg-yellow-500/10 border-yellow-500 text-yellow-700 dark:text-yellow-400",
-                    item.type === 'error' && "bg-red-500/10 border-red-500 text-red-700 dark:text-red-400"
-                  )}
-                >
-                  {item.type === 'correct' && <CheckCircle2 className="h-4 w-4 inline mr-2" />}
-                  {item.type === 'warning' && <AlertTriangle className="h-4 w-4 inline mr-2" />}
-                  {item.type === 'error' && <AlertTriangle className="h-4 w-4 inline mr-2" />}
-                  {item.message}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* Selected Exercise Info */}
         {selectedExerciseData && (
