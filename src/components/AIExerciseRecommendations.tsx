@@ -1,15 +1,16 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Progress } from '@/components/ui/progress';
 import { supabase } from '@/integrations/supabase/client';
-import { Sparkles, Loader2, Target, AlertCircle, Dumbbell, CheckCircle2, ArrowRight, Zap, Brain, WifiOff, Play } from 'lucide-react';
+import { Sparkles, Loader2, Target, AlertCircle, Dumbbell, CheckCircle2, ArrowRight, Zap, Brain, WifiOff, Play, Clock } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useToast } from '@/hooks/use-toast';
 import { exercises } from '@/data/exercises';
 import { fallbackWorkoutTemplates, getRecommendedTemplate, FallbackWorkoutPlan } from '@/data/fallbackWorkoutTemplates';
+import { useWorkoutPlan } from '@/contexts/WorkoutPlanContext';
 
 const fitnessLevels = ['beginner', 'intermediate', 'advanced'] as const;
 const goalOptions = ['Build Muscle', 'Lose Weight', 'Flexibility', 'Endurance'];
@@ -32,12 +33,24 @@ interface ExercisePlan {
 export const AIExerciseRecommendations = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [plan, setPlan] = useState<ExercisePlan | null>(null);
+  const [fallbackPlan, setFallbackPlan] = useState<FallbackWorkoutPlan | null>(null);
+  const [showFallback, setShowFallback] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [retryInfo, setRetryInfo] = useState<string | null>(null);
   const [fitnessLevel, setFitnessLevel] = useState<string>('beginner');
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [selectedMuscles, setSelectedMuscles] = useState<string[]>([]);
   const { toast } = useToast();
+  const { setUserPreferences, setCurrentPlan, startExerciseInCoach } = useWorkoutPlan();
+
+  // Sync preferences with context
+  useEffect(() => {
+    setUserPreferences({
+      fitnessLevel,
+      goals: selectedGoals,
+      targetMuscles: selectedMuscles
+    });
+  }, [fitnessLevel, selectedGoals, selectedMuscles, setUserPreferences]);
 
   const toggleSelection = (item: string, selected: string[], setSelected: (items: string[]) => void) => {
     if (selected.includes(item)) {
@@ -52,14 +65,36 @@ export const AIExerciseRecommendations = () => {
     return exercises.find(e => e.id === matchId);
   };
 
+  const showOfflineFallback = () => {
+    const recommended = getRecommendedTemplate(fitnessLevel, selectedGoals, selectedMuscles);
+    setFallbackPlan(recommended);
+    setShowFallback(true);
+    setPlan(null);
+    setCurrentPlan(recommended);
+    toast({ 
+      title: "Offline Plan Ready!", 
+      description: `Using "${recommended.name}" template based on your preferences.` 
+    });
+  };
+
+  const handleStartExercise = (matchId?: string) => {
+    if (matchId) {
+      startExerciseInCoach(matchId);
+    }
+  };
+
   const handleGetRecommendations = async (retryCount = 0) => {
     const maxRetries = 3;
-    const baseDelay = 5000; // Start with 5 seconds
+    const baseDelay = 5000;
 
     setIsLoading(true);
     setError(null);
     setRetryInfo(null);
-    if (retryCount === 0) setPlan(null);
+    setShowFallback(false);
+    if (retryCount === 0) {
+      setPlan(null);
+      setFallbackPlan(null);
+    }
 
     try {
       const { data, error: fnError } = await supabase.functions.invoke('exercise-recommendations', {
@@ -74,13 +109,11 @@ export const AIExerciseRecommendations = () => {
 
       if (fnError) throw fnError;
       if (data?.error) {
-        // Check for rate limit error
         if (data.error.toLowerCase().includes('rate limit')) {
           if (retryCount < maxRetries) {
-            const delay = baseDelay * Math.pow(2, retryCount); // 5s, 10s, 20s
+            const delay = baseDelay * Math.pow(2, retryCount);
             const seconds = delay / 1000;
             
-            // Countdown display
             for (let i = seconds; i > 0; i--) {
               setRetryInfo(`High demand - waiting ${i}s before retry ${retryCount + 1}/${maxRetries}...`);
               await new Promise(resolve => setTimeout(resolve, 1000));
@@ -88,19 +121,22 @@ export const AIExerciseRecommendations = () => {
             setRetryInfo(null);
             return handleGetRecommendations(retryCount + 1);
           }
-          throw new Error('AI service is very busy right now. Please wait 1-2 minutes and try again.');
+          // After max retries, show fallback
+          setIsLoading(false);
+          showOfflineFallback();
+          return;
         }
         throw new Error(data.error);
       }
 
       setPlan(data.plan);
+      setCurrentPlan(data.plan);
       setRetryInfo(null);
       toast({ title: "Plan Ready!", description: "Your workout plan has been generated." });
     } catch (err) {
       console.error('Error getting recommendations:', err);
       const errorMessage = err instanceof Error ? err.message : 'Failed to get recommendations';
       
-      // Handle rate limit with retry for network-level errors
       if (errorMessage.toLowerCase().includes('rate limit') && retryCount < maxRetries) {
         const delay = baseDelay * Math.pow(2, retryCount);
         const seconds = delay / 1000;
@@ -113,6 +149,13 @@ export const AIExerciseRecommendations = () => {
         return handleGetRecommendations(retryCount + 1);
       }
       
+      // Show fallback on persistent errors
+      if (retryCount >= maxRetries - 1 || errorMessage.toLowerCase().includes('rate limit')) {
+        setIsLoading(false);
+        showOfflineFallback();
+        return;
+      }
+      
       setError(errorMessage);
       setRetryInfo(null);
       toast({ title: "Error", description: errorMessage, variant: "destructive" });
@@ -123,6 +166,8 @@ export const AIExerciseRecommendations = () => {
     }
   };
 
+  const currentDisplayPlan = showFallback && fallbackPlan ? fallbackPlan : plan;
+
   return (
     <Card className="shadow-2xl border-0 bg-gradient-to-br from-purple-900/40 via-black/30 to-blue-900/40 backdrop-blur-xl border border-purple-500/30 overflow-hidden animate-fade-in">
       <CardHeader className="pb-4 pt-5 px-6 border-b border-purple-500/20">
@@ -131,6 +176,12 @@ export const AIExerciseRecommendations = () => {
             <Brain className="h-5 w-5 text-purple-300" />
           </div>
           AI Workout Recommendations
+          {showFallback && (
+            <Badge className="ml-2 bg-yellow-500/20 text-yellow-300 border-yellow-400/30">
+              <WifiOff className="h-3 w-3 mr-1" />
+              Offline Mode
+            </Badge>
+          )}
         </CardTitle>
       </CardHeader>
       
@@ -224,28 +275,53 @@ export const AIExerciseRecommendations = () => {
                 </>
               )}
             </Button>
+
+            {/* Quick Offline Templates */}
+            <div className="pt-4 border-t border-purple-500/20">
+              <p className="text-xs text-gray-500 mb-3 flex items-center gap-2">
+                <WifiOff className="h-3 w-3" />
+                Or use a pre-made template:
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {fallbackWorkoutTemplates.slice(0, 4).map((template) => (
+                  <Badge
+                    key={template.id}
+                    onClick={() => {
+                      setFallbackPlan(template);
+                      setShowFallback(true);
+                      setPlan(null);
+                      setCurrentPlan(template);
+                      toast({ title: "Template Loaded!", description: `Using "${template.name}" template.` });
+                    }}
+                    className="cursor-pointer text-xs px-2 py-1 bg-black/40 text-gray-400 border-gray-600/40 hover:border-purple-400/50 hover:text-purple-300 transition-all"
+                  >
+                    {template.name}
+                  </Badge>
+                ))}
+              </div>
+            </div>
           </div>
 
           {/* Right Side - Output */}
           <div className="p-6 bg-gradient-to-br from-black/30 to-purple-900/10 min-h-[400px] flex flex-col">
             {/* Retry Info Display */}
             {retryInfo && (
-              <div className="p-4 rounded-xl bg-yellow-500/20 border border-yellow-500/30 flex items-center gap-3 animate-fade-in">
+              <div className="p-4 rounded-xl bg-yellow-500/20 border border-yellow-500/30 flex items-center gap-3 animate-fade-in mb-4">
                 <Loader2 className="h-5 w-5 text-yellow-400 animate-spin shrink-0" />
                 <p className="text-yellow-300 text-sm">{retryInfo}</p>
               </div>
             )}
 
             {/* Error Display */}
-            {error && !retryInfo && (
-              <div className="p-4 rounded-xl bg-red-500/20 border border-red-500/30 flex items-center gap-3 animate-fade-in">
+            {error && !retryInfo && !showFallback && (
+              <div className="p-4 rounded-xl bg-red-500/20 border border-red-500/30 flex items-center gap-3 animate-fade-in mb-4">
                 <AlertCircle className="h-5 w-5 text-red-400 shrink-0" />
                 <p className="text-red-300 text-sm">{error}</p>
               </div>
             )}
 
             {/* Empty State */}
-            {!plan && !error && !isLoading && (
+            {!currentDisplayPlan && !error && !isLoading && (
               <div className="flex-1 flex flex-col items-center justify-center text-center animate-fade-in">
                 <div className="p-4 rounded-2xl bg-purple-500/10 border border-purple-500/20 mb-4">
                   <Sparkles className="h-12 w-12 text-purple-400" />
@@ -258,7 +334,7 @@ export const AIExerciseRecommendations = () => {
             )}
 
             {/* Loading State */}
-            {isLoading && (
+            {isLoading && !retryInfo && (
               <div className="flex-1 flex flex-col items-center justify-center text-center animate-fade-in">
                 <div className="relative">
                   <div className="absolute inset-0 bg-purple-500/20 rounded-full blur-xl animate-pulse" />
@@ -268,19 +344,33 @@ export const AIExerciseRecommendations = () => {
               </div>
             )}
 
-            {/* Plan Display */}
-            {plan && !isLoading && (
+            {/* Plan Display (Both AI and Fallback) */}
+            {currentDisplayPlan && !isLoading && (
               <div className="space-y-5 overflow-y-auto animate-fade-in">
+                {/* Offline Banner */}
+                {showFallback && fallbackPlan && (
+                  <div className="p-3 rounded-xl bg-gradient-to-r from-yellow-500/20 to-orange-500/20 border border-yellow-500/30 flex items-center gap-3">
+                    <WifiOff className="h-5 w-5 text-yellow-400 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-yellow-300 text-sm font-medium">{fallbackPlan.name}</p>
+                      <p className="text-yellow-300/70 text-xs flex items-center gap-2">
+                        <Clock className="h-3 w-3" />
+                        {fallbackPlan.duration} • {fallbackPlan.difficulty}
+                      </p>
+                    </div>
+                  </div>
+                )}
+
                 {/* Summary */}
                 <div className="p-4 rounded-xl bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30">
-                  <p className="text-gray-200 text-sm italic">{plan.summary}</p>
+                  <p className="text-gray-200 text-sm italic">{currentDisplayPlan.summary}</p>
                 </div>
 
                 {/* Focus Areas Chart */}
                 <div className="space-y-2">
                   <Label className="text-gray-400 text-xs uppercase tracking-wider">Focus Distribution</Label>
                   <div className="space-y-2">
-                    {plan.focusAreas.map((area) => (
+                    {currentDisplayPlan.focusAreas.map((area) => (
                       <div key={area.area} className="flex items-center gap-3">
                         <span className="text-xs text-gray-400 w-20 shrink-0">{area.area}</span>
                         <div className="flex-1 h-2 bg-black/40 rounded-full overflow-hidden">
@@ -299,7 +389,7 @@ export const AIExerciseRecommendations = () => {
                 <div className="space-y-2">
                   <Label className="text-gray-400 text-xs uppercase tracking-wider">Your Exercises</Label>
                   <div className="space-y-2 max-h-48 overflow-y-auto custom-scrollbar">
-                    {plan.exercises.map((ex, idx) => {
+                    {currentDisplayPlan.exercises.map((ex, idx) => {
                       const matched = getMatchedExercise(ex.matchId);
                       return (
                         <div
@@ -322,13 +412,22 @@ export const AIExerciseRecommendations = () => {
                             {ex.benefit}
                           </p>
                           {matched && (
-                            <a
-                              href={`#${matched.id}`}
-                              className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1 transition-colors"
-                            >
-                              <ArrowRight className="h-3 w-3" />
-                              View in library below
-                            </a>
+                            <div className="flex items-center gap-2">
+                              <a
+                                href={`#${matched.id}`}
+                                className="text-xs text-purple-400 hover:text-purple-300 flex items-center gap-1 transition-colors"
+                              >
+                                <ArrowRight className="h-3 w-3" />
+                                View in library
+                              </a>
+                              <button
+                                onClick={() => handleStartExercise(ex.matchId)}
+                                className="text-xs text-green-400 hover:text-green-300 flex items-center gap-1 transition-colors bg-green-500/10 px-2 py-1 rounded-lg hover:bg-green-500/20"
+                              >
+                                <Play className="h-3 w-3" />
+                                Start with AI Coach
+                              </button>
+                            </div>
                           )}
                         </div>
                       );
@@ -340,7 +439,7 @@ export const AIExerciseRecommendations = () => {
                 <div className="space-y-2">
                   <Label className="text-gray-400 text-xs uppercase tracking-wider">Pro Tips</Label>
                   <ul className="space-y-1.5">
-                    {plan.tips.map((tip, idx) => (
+                    {currentDisplayPlan.tips.map((tip, idx) => (
                       <li key={idx} className="text-xs text-gray-300 flex items-start gap-2 p-2 rounded-lg bg-black/20">
                         <span className="text-purple-400 text-lg leading-none">•</span>
                         {tip}
