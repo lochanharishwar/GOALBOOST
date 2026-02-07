@@ -4,14 +4,14 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 const ALLOWED_ORIGINS = [
   'https://vnshckquumonswjumvsl.lovable.app',
   'https://vnshckquumonswjumvsl.lovableproject.com',
+  'https://goalboost.lovable.app',
   'http://localhost:5173',
   'http://localhost:3000',
 ];
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigin = origin && ALLOWED_ORIGINS.some(allowed =>
-    origin === allowed || origin.endsWith('.lovable.app') || origin.endsWith('.lovableproject.com')
-  ) ? origin : ALLOWED_ORIGINS[0];
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin)
+    ? origin : ALLOWED_ORIGINS[0];
 
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
@@ -70,6 +70,38 @@ serve(async (req) => {
   }
 
   try {
+    // Require authentication
+    const authHeader = req.headers.get('Authorization');
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const token = authHeader.replace('Bearer ', '');
+
+    // Verify the JWT by calling Supabase auth
+    const authResponse = await fetch(`${supabaseUrl}/auth/v1/user`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'apikey': supabaseAnonKey,
+      },
+    });
+
+    if (!authResponse.ok) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const authUser = await authResponse.json();
+    const userId = authUser.id;
+    console.log('Authenticated request from user:', userId);
+
     let rawBody;
     try {
       rawBody = await req.json();

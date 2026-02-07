@@ -13,6 +13,7 @@ import { cn } from '@/lib/utils';
 import { useClickSound } from '@/utils/soundUtils';
 import { useTheme } from '@/contexts/ThemeContext';
 import { supabase } from '@/integrations/supabase/client';
+import { useAuth } from '@/contexts/AuthContext';
 
 interface Reminder {
   id: string;
@@ -48,7 +49,7 @@ const Reminders = () => {
   const [ringingReminderId, setRingingReminderId] = useState<string | null>(null);
   const { toast } = useToast();
   const { playClickSound } = useClickSound();
-  
+  const { user } = useAuth();
   const alarmContextRef = useRef<AudioContext | null>(null);
   const alarmIntervalRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -234,7 +235,8 @@ const Reminders = () => {
         repeat_days: newReminder.repeatDays,
         priority: newReminder.priority,
         category: newReminder.category,
-        notes: newReminder.notes
+        notes: newReminder.notes,
+        user_id: user?.id ?? '',
       });
 
       if (!error) {
