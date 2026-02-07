@@ -4,14 +4,14 @@ import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 const ALLOWED_ORIGINS = [
   'https://vnshckquumonswjumvsl.lovable.app',
   'https://vnshckquumonswjumvsl.lovableproject.com',
+  'https://goalboost.lovable.app',
   'http://localhost:5173',
   'http://localhost:3000',
 ];
 
 function getCorsHeaders(origin: string | null): Record<string, string> {
-  const allowedOrigin = origin && ALLOWED_ORIGINS.some(allowed => 
-    origin === allowed || origin.endsWith('.lovable.app') || origin.endsWith('.lovableproject.com')
-  ) ? origin : ALLOWED_ORIGINS[0];
+  const allowedOrigin = origin && ALLOWED_ORIGINS.includes(origin)
+    ? origin : ALLOWED_ORIGINS[0];
   
   return {
     'Access-Control-Allow-Origin': allowedOrigin,
@@ -99,20 +99,28 @@ serve(async (req) => {
   }
 
   try {
-    // Optional authentication - allow both authenticated and anonymous access
+    // Require authentication
     const authHeader = req.headers.get('Authorization');
-    let userId = 'anonymous';
-    
-    if (authHeader?.startsWith('Bearer ')) {
-      const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-      const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-      const token = authHeader.replace('Bearer ', '');
-      
-      const { valid, userId: validatedUserId } = await validateJWT(token, supabaseUrl, supabaseAnonKey);
-      if (valid && validatedUserId) {
-        userId = validatedUserId;
-      }
+    if (!authHeader?.startsWith('Bearer ')) {
+      return new Response(
+        JSON.stringify({ error: 'Authentication required' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
+
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+    const token = authHeader.replace('Bearer ', '');
+    
+    const { valid, userId: validatedUserId } = await validateJWT(token, supabaseUrl, supabaseAnonKey);
+    if (!valid || !validatedUserId) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid or expired token' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    const userId = validatedUserId;
 
     console.log('Request from user:', userId);
 

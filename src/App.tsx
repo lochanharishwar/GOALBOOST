@@ -2,6 +2,8 @@ import { Routes, Route } from 'react-router-dom';
 import { Toaster } from '@/components/ui/toaster';
 import { TimerProvider, useTimer } from '@/contexts/TimerContext';
 import { ThemeProvider } from '@/contexts/ThemeContext';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { FloatingTimer } from '@/components/FloatingTimer';
 import Dashboard from '@/pages/Dashboard';
 import Analytics from '@/pages/Analytics';
@@ -9,6 +11,7 @@ import Habits from '@/pages/Habits';
 import Pomodoro from '@/pages/Pomodoro';
 import Reminders from '@/pages/Reminders';
 import Exercises from '@/pages/Exercises';
+import Auth from '@/pages/Auth';
 import NotFound from '@/pages/NotFound';
 
 function FloatingTimerWrapper() {
@@ -20,12 +23,13 @@ function FloatingTimerWrapper() {
 function AppRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Dashboard />} />
-      <Route path="/analytics" element={<Analytics />} />
-      <Route path="/habits" element={<Habits />} />
-      <Route path="/pomodoro" element={<Pomodoro />} />
-      <Route path="/reminders" element={<Reminders />} />
-      <Route path="/exercises" element={<Exercises />} />
+      <Route path="/auth" element={<Auth />} />
+      <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+      <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+      <Route path="/habits" element={<ProtectedRoute><Habits /></ProtectedRoute>} />
+      <Route path="/pomodoro" element={<ProtectedRoute><Pomodoro /></ProtectedRoute>} />
+      <Route path="/reminders" element={<ProtectedRoute><Reminders /></ProtectedRoute>} />
+      <Route path="/exercises" element={<ProtectedRoute><Exercises /></ProtectedRoute>} />
       <Route path="*" element={<NotFound />} />
     </Routes>
   );
@@ -34,11 +38,13 @@ function AppRoutes() {
 function App() {
   return (
     <ThemeProvider>
-      <TimerProvider>
-        <AppRoutes />
-        <FloatingTimerWrapper />
-        <Toaster />
-      </TimerProvider>
+      <AuthProvider>
+        <TimerProvider>
+          <AppRoutes />
+          <FloatingTimerWrapper />
+          <Toaster />
+        </TimerProvider>
+      </AuthProvider>
     </ThemeProvider>
   );
 }
