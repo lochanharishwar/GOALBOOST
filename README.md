@@ -1,73 +1,182 @@
-# Welcome to your Lovable project
+# 🚀 GoalBoost
 
-## Project info
+> **Your Daily Productivity Companion — Set goals, track progress, and achieve more.**
 
-**URL**: https://lovable.dev/projects/94313f82-c82f-42f3-bbf4-7a6a3779d1b2
+[![Live Demo](https://img.shields.io/badge/Live%20Demo-goalboost.lovable.app-brightgreen?style=for-the-badge)](https://goalboost.lovable.app/)
+[![Built with Lovable](https://img.shields.io/badge/Built%20with-Lovable-blueviolet?style=for-the-badge)](https://lovable.dev)
+[![Supabase](https://img.shields.io/badge/Backend-Supabase-3ECF8E?style=for-the-badge&logo=supabase)](https://supabase.com)
+[![React](https://img.shields.io/badge/Frontend-React-61DAFB?style=for-the-badge&logo=react)](https://react.dev)
 
-## How can I edit this code?
+---
 
-There are several ways of editing your application.
+## 📖 About
 
-**Use Lovable**
+**GoalBoost** is a modern, full-stack productivity web app designed to help individuals set meaningful goals, stay consistent, and visualize their growth over time. With a clean interface, AI-powered suggestions, and real-time data sync, GoalBoost makes it easy to go from intention to achievement.
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/94313f82-c82f-42f3-bbf4-7a6a3779d1b2) and start prompting.
+---
 
-Changes made via Lovable will be committed automatically to this repo.
+## ✨ Features
 
-**Use your preferred IDE**
+### 🎯 Goal Setting & Tracking
+- Create short-term and long-term goals with ease
+- Break goals down into actionable milestones
+- Set deadlines and priorities to stay focused
+- Mark goals as complete and celebrate progress
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 📊 Progress Visualization
+- Intuitive dashboards with charts and progress bars
+- Visual streaks and completion metrics
+- Historical view of your journey over days, weeks, and months
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+### 🤖 AI-Powered Suggestions
+- Smart recommendations to refine and improve your goals
+- Personalized nudges to keep you on track
+- AI assistance in setting realistic and SMART goals
 
-Follow these steps:
+### 🔐 User Authentication
+- Secure sign-up and login powered by **Supabase Auth**
+- Persistent user data across sessions and devices
+- Protected routes ensuring data privacy
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+---
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+## 🛠️ Tech Stack
 
-# Step 3: Install the necessary dependencies.
-npm i
+| Layer        | Technology                          |
+|--------------|--------------------------------------|
+| **Frontend** | React, TypeScript, Tailwind CSS      |
+| **Backend**  | Supabase (PostgreSQL + Edge Functions)|
+| **Auth**     | Supabase Auth                        |
+| **Database** | Supabase (PostgreSQL)                |
+| **Hosting**  | Lovable (Netlify-based deployment)   |
+| **AI**       | Integrated AI suggestions            |
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/) (v18 or above)
+- [npm](https://www.npmjs.com/) or [bun](https://bun.sh/)
+- A [Supabase](https://supabase.com/) account
+
+### Installation
+
+```bash
+# 1. Clone the repository
+git clone https://github.com/lochanharishwar/goalboost.git
+cd goalboost
+
+# 2. Install dependencies
+npm install
+
+# 3. Set up environment variables
+cp .env.example .env
+```
+
+### Environment Variables
+
+Create a `.env` file in the root of your project and add:
+
+```env
+VITE_SUPABASE_URL=your_supabase_project_url
+VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
+```
+
+> You can find these in your **Supabase project dashboard → Settings → API**.
+
+### Running the App
+
+```bash
+# Start the development server
 npm run dev
 ```
 
-**Edit a file directly in GitHub**
+Open [http://localhost:5173](http://localhost:5173) in your browser.
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
+---
 
-**Use GitHub Codespaces**
+## 📁 Project Structure
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
+```
+goalboost/
+├── public/               # Static assets
+├── src/
+│   ├── components/       # Reusable UI components
+│   ├── pages/            # App pages/routes
+│   ├── hooks/            # Custom React hooks
+│   ├── lib/              # Supabase client & utilities
+│   ├── types/            # TypeScript type definitions
+│   └── main.tsx          # App entry point
+├── supabase/
+│   └── migrations/       # Database schema migrations
+├── .env.example
+├── package.json
+└── README.md
+```
 
-## What technologies are used for this project?
+---
 
-This project is built with:
+## 🗄️ Database (Supabase)
 
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
+GoalBoost uses **Supabase** as its backend, providing:
 
-## How can I deploy this project?
+- **PostgreSQL** database for storing goals, milestones, and user data
+- **Row-Level Security (RLS)** to ensure each user only accesses their own data
+- **Real-time subscriptions** for live progress updates
+- **Supabase Auth** for user sign-up, login, and session management
 
-Simply open [Lovable](https://lovable.dev/projects/94313f82-c82f-42f3-bbf4-7a6a3779d1b2) and click on Share -> Publish.
+---
 
-## Can I connect a custom domain to my Lovable project?
+## 🌐 Deployment
 
-Yes, you can!
+GoalBoost is deployed via **Lovable** and accessible at:
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+🔗 **[https://goalboost.lovable.app/](https://goalboost.lovable.app/)**
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+To deploy your own version:
+1. Fork this repository
+2. Connect it to your Lovable or Netlify account
+3. Add your Supabase environment variables in the deployment settings
+4. Deploy!
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Here's how to get started:
+
+```bash
+# 1. Fork the repo and clone your fork
+git clone https://github.com/YOUR_USERNAME/goalboost.git
+
+# 2. Create a new feature branch
+git checkout -b feature/your-feature-name
+
+# 3. Make your changes and commit
+git commit -m "feat: add your feature description"
+
+# 4. Push and open a Pull Request
+git push origin feature/your-feature-name
+```
+
+Please follow the existing code style and write clear commit messages.
+
+---
+
+## 📄 License
+
+This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 👤 Author
+
+**Lochan Harishwar**
+
+- GitHub: [@lochanharishwar](https://github.com/lochanharishwar)
+
+---
+
+<p align="center">Made with ❤️ and ☕ — Built to help you achieve more, one goal at a time.</p>
