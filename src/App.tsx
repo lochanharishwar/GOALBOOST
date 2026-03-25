@@ -11,6 +11,7 @@ import Reminders from '@/pages/Reminders';
 import Exercises from '@/pages/Exercises';
 import NotFound from '@/pages/NotFound';
 
+// Must be rendered inside TimerProvider
 function FloatingTimerWrapper() {
   const { isPiPActive } = useTimer();
   if (!isPiPActive) return null;
