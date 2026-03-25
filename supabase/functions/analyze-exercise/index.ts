@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
@@ -71,26 +70,6 @@ serve(async (req) => {
   }
 
   try {
-    // Use Supabase built-in JWT verification (verify_jwt=true handles this automatically)
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const authHeader = req.headers.get('Authorization');
-
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader ?? '' } },
-    });
-
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Authentication required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const userId = user.id;
-    console.log('Authenticated request from user:', userId);
-
     let rawBody;
     try {
       rawBody = await req.json();
@@ -101,7 +80,7 @@ serve(async (req) => {
       );
     }
 
-    const { imageData, trackBodyParts } = rawBody;
+    const { imageData } = rawBody;
 
     // Validate and sanitize inputs
     const exerciseId = sanitizeString(rawBody.exerciseId, MAX_EXERCISE_ID_LENGTH);
@@ -129,7 +108,6 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    // Enhanced system prompt with body part tracking
     const systemPrompt = `You are an expert fitness coach AI that analyzes exercise form from images with detailed body part tracking.
 Your task is to analyze the person's form in the image and provide comprehensive feedback.
 
@@ -138,8 +116,8 @@ ${exerciseSteps?.map((step: string, i: number) => `${i + 1}. ${step}`).join('\n'
 
 Analyze the image and respond with a JSON object containing:
 {
-  "repCompleted": boolean, // true if you detect a completed repetition
-  "formQuality": "good" | "warning" | "bad", // overall form assessment
+  "repCompleted": boolean,
+  "formQuality": "good" | "warning" | "bad",
   "bodyTracking": {
     "leftArm": "status description (Good/Adjust needed/Incorrect)",
     "rightArm": "status description",
@@ -149,7 +127,7 @@ Analyze the image and respond with a JSON object containing:
     "overall": "overall body alignment status"
   },
   "feedback": [
-    { "type": "correct" | "warning" | "error", "message": "specific feedback about form - keep it SHORT for voice" }
+    { "type": "correct" | "warning" | "error", "message": "specific feedback - SHORT for voice" }
   ]
 }
 
@@ -192,9 +170,7 @@ Keep feedback messages very short for voice output.`
               },
               {
                 type: "image_url",
-                image_url: {
-                  url: imageData
-                }
+                image_url: { url: imageData }
               }
             ]
           }
@@ -228,15 +204,11 @@ Keep feedback messages very short for voice output.`
       throw new Error("No response from AI");
     }
 
-    // Parse the JSON response from the AI
     let analysisResult;
     try {
-      // Try to extract JSON from the response
       const jsonMatch = content.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         analysisResult = JSON.parse(jsonMatch[0]);
-        
-        // Ensure bodyTracking exists with defaults
         if (!analysisResult.bodyTracking) {
           analysisResult.bodyTracking = {
             leftArm: "Analyzing...",
@@ -248,7 +220,6 @@ Keep feedback messages very short for voice output.`
           };
         }
       } else {
-        // Default response if parsing fails
         analysisResult = {
           repCompleted: false,
           formQuality: "warning",

@@ -1,5 +1,4 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
@@ -77,27 +76,6 @@ serve(async (req) => {
   }
 
   try {
-    // Use Supabase built-in JWT verification (verify_jwt=true handles this automatically)
-    // We still need to get the user identity for logging/rate limiting
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const authHeader = req.headers.get('Authorization');
-
-    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
-      global: { headers: { Authorization: authHeader ?? '' } },
-    });
-
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    if (authError || !user) {
-      return new Response(
-        JSON.stringify({ error: 'Authentication required' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const userId = user.id;
-    console.log('Request from user:', userId);
-
     // Parse and validate input
     let rawBody;
     try {
@@ -118,7 +96,7 @@ serve(async (req) => {
     
     // Check for prompt injection attempts
     if (detectPromptInjection(goals) || detectPromptInjection(preferences)) {
-      console.warn('Potential prompt injection attempt detected:', { userId, goals, preferences });
+      console.warn('Potential prompt injection attempt detected');
       return new Response(
         JSON.stringify({ error: 'Invalid input detected. Please use appropriate fitness-related terms.' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
@@ -163,7 +141,7 @@ Equipment: ${availableEquipment.length > 0 ? availableEquipment.join(', ') : 'No
 Target: ${targetMuscles.length > 0 ? targetMuscles.join(', ') : 'Full body'}
 Notes: ${preferences}`;
 
-    console.log('Generating exercise recommendations for user:', userId, { fitnessLevel, goals });
+    console.log('Generating exercise recommendations', { fitnessLevel, goals });
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -215,7 +193,7 @@ Notes: ${preferences}`;
       throw new Error('Failed to parse recommendations');
     }
 
-    console.log('Successfully generated structured recommendations for user:', userId);
+    console.log('Successfully generated structured recommendations');
 
     return new Response(
       JSON.stringify({ plan: parsedPlan }),
