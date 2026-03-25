@@ -32,7 +32,7 @@ const AIExerciseCamera = () => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
-  const analysisIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const analysisIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const { selectedExerciseForCoach, setSelectedExerciseForCoach } = useWorkoutPlan();
   

@@ -91,9 +91,9 @@ export const TimerProvider = ({ children }: { children: ReactNode }) => {
   const [alarmSound, setAlarmSound] = useState<AlarmSound>(initialState.alarmSound ?? 'classic');
   
   const { toast } = useToast();
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
-  const tickIntervalRef = useRef<NodeJS.Timeout | null>(null);
-  const alarmIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const intervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const tickIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const alarmIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const alarmContextRef = useRef<AudioContext | null>(null);
   const alarmSourceRef = useRef<AudioBufferSourceNode | null>(null);
 

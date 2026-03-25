@@ -49,7 +49,7 @@ const Reminders = () => {
   const { playClickSound } = useClickSound();
   
   const alarmContextRef = useRef<AudioContext | null>(null);
-  const alarmIntervalRef = useRef<NodeJS.Timeout | null>(null);
+  const alarmIntervalRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   // Load reminders from localStorage
   useEffect(() => {

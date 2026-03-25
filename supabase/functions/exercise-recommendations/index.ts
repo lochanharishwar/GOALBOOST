@@ -1,4 +1,5 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 // Allowed origins for CORS
 const ALLOWED_ORIGINS = [
@@ -49,7 +50,6 @@ function detectPromptInjection(text: string): boolean {
 function sanitizeString(input: unknown, maxLength: number = MAX_STRING_LENGTH): string | null {
   if (input === null || input === undefined) return null;
   if (typeof input !== 'string') return null;
-  // Trim, limit length, and remove potentially dangerous characters for prompt injection
   return input.trim().slice(0, maxLength).replace(/[<>{}[\]\\]/g, '');
 }
 
@@ -68,28 +68,6 @@ function validateFitnessLevel(input: unknown): string {
   return ALLOWED_FITNESS_LEVELS.includes(normalized) ? normalized : 'beginner';
 }
 
-// Simple JWT validation - decode and verify with Supabase
-async function validateJWT(token: string, supabaseUrl: string, supabaseAnonKey: string): Promise<{ valid: boolean; userId?: string }> {
-  try {
-    // Call Supabase auth API to verify the token
-    const response = await fetch(`${supabaseUrl}/auth/v1/user`, {
-      headers: {
-        'Authorization': `Bearer ${token}`,
-        'apikey': supabaseAnonKey,
-      },
-    });
-    
-    if (!response.ok) {
-      return { valid: false };
-    }
-    
-    const user = await response.json();
-    return { valid: true, userId: user.id };
-  } catch {
-    return { valid: false };
-  }
-}
-
 serve(async (req) => {
   const origin = req.headers.get('Origin');
   const corsHeaders = getCorsHeaders(origin);
@@ -99,29 +77,25 @@ serve(async (req) => {
   }
 
   try {
-    // Require authentication
+    // Use Supabase built-in JWT verification (verify_jwt=true handles this automatically)
+    // We still need to get the user identity for logging/rate limiting
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
     const authHeader = req.headers.get('Authorization');
-    if (!authHeader?.startsWith('Bearer ')) {
+
+    const supabaseClient = createClient(supabaseUrl, supabaseAnonKey, {
+      global: { headers: { Authorization: authHeader ?? '' } },
+    });
+
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
+    if (authError || !user) {
       return new Response(
         JSON.stringify({ error: 'Authentication required' }),
         { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
 
-    const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
-    const supabaseAnonKey = Deno.env.get('SUPABASE_ANON_KEY')!;
-    const token = authHeader.replace('Bearer ', '');
-    
-    const { valid, userId: validatedUserId } = await validateJWT(token, supabaseUrl, supabaseAnonKey);
-    if (!valid || !validatedUserId) {
-      return new Response(
-        JSON.stringify({ error: 'Invalid or expired token' }),
-        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
-    }
-
-    const userId = validatedUserId;
-
+    const userId = user.id;
     console.log('Request from user:', userId);
 
     // Parse and validate input
