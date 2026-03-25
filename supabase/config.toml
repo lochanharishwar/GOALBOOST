@@ -1,7 +1,7 @@
 project_id = "vnshckquumonswjumvsl"
 
 [functions.exercise-recommendations]
-verify_jwt = true
+verify_jwt = false
 
 [functions.analyze-exercise]
-verify_jwt = true
+verify_jwt = false
