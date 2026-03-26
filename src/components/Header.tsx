@@ -1,4 +1,5 @@
-import { Moon, Sun, Zap, Calendar, Menu, X } from 'lucide-react';
+import { Moon, Sun, Calendar, Menu, X } from 'lucide-react';
+import goalflowLogo from '@/assets/goalflow-logo.png';
 import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Calendar as CalendarComponent } from '@/components/ui/calendar';
