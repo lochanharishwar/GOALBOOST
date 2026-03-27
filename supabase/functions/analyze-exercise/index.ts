@@ -47,9 +47,6 @@ function sanitizeStepsArray(input: unknown): string[] {
 }
 
 serve(async (req) => {
-  
-  const corsHeaders = corsHeaders;
-
   // Handle CORS preflight
   if (req.method === "OPTIONS") {
     return new Response(null, { headers: corsHeaders });
